@@ -1,4 +1,4 @@
-use crate::command_line::CommandLineDef;
+use crate::cl_def::CommandLineDef;
 
 #[test]
 fn should_return_default_boolean_false() {
@@ -50,7 +50,7 @@ fn should_return_i16() {
       .add_option(vec!["--positive"], Some("pos"), None, "A positive value")
       .parse(args.into_iter());
 
-  assert_eq!(cl.program_name, "test");
+  assert_eq!(cl.program_name(), "test");
 
   let neg:i16 = cl.option("--negative");
   assert_eq!(neg, -1);
@@ -71,7 +71,7 @@ fn aliases_should_have_value() {
       .add_option(vec!["-p","--positive"], Some("pos"), None, "A positive value")
       .parse(args.into_iter());
 
-  assert_eq!(cl.program_name, "test");
+  assert_eq!(cl.program_name(), "test");
 
   let n:i16 = cl.option("-n");
   assert_eq!(n, -1);
@@ -99,9 +99,12 @@ fn should_capture_interleaved_args() {
   let cl = CommandLineDef::new()
       .add_option(vec!["-b","--bool"], None, None, "A boolean value")
       .add_option(vec!["-n","--num"], Some("num"), None, "A numeric value")
+      .add_argument("arg-0")
+      .add_argument("arg-1")
+      .add_argument("arg-2")
       .parse(args.into_iter());
 
-  assert_eq!(cl.program_name, "test");
+  assert_eq!(cl.program_name(), "test");
 
   let b:bool = cl.option("-b");
   assert_eq!(b, true);
@@ -110,14 +113,20 @@ fn should_capture_interleaved_args() {
   assert_eq!(n, -1);
 
   assert_eq!(cl.arguments(), 3);
-  assert_eq!(cl.arguments[0], "arg1");
-  assert_eq!(cl.arguments[1], "arg2");
-  assert_eq!(cl.arguments[2], "arg3");
+
+  let arg0:String = cl.argument(0);
+  assert_eq!(arg0, "arg1");
+
+  let arg1:String = cl.argument(1);
+  assert_eq!(arg1, "arg2");
+
+  let arg2:String = cl.argument(2);
+  assert_eq!(arg2, "arg3");
 }
 
 #[test]
 #[should_panic(expected = "Option --increment is required")]
-fn shaould_panic_for_missing_required_option() {
+fn should_panic_for_missing_required_option() {
   let args=vec![String::from("test"), String::from("-c")];
   let cl = CommandLineDef::new()
       .add_option(vec!["--increment"], Some("numeric value"), None, "A number to increment by")
@@ -149,4 +158,30 @@ fn should_panic_for_missing_value() {
 
   let inc:i16 = cl.option("--increment");
   assert_eq!(inc, -1);
+}
+
+#[test]
+#[should_panic(expected = "1 arguments defined, 2 arguments found")]
+fn should_panic_for_too_many_args() {
+  let args=vec![String::from("test"), String::from("arg1"), String::from("arg2")];
+  let cl = CommandLineDef::new()
+      .add_argument("arg-1")
+      .parse(args.into_iter());
+
+  let arg1:String = cl.argument(0);
+  assert_eq!(arg1, "arg-1");
+}
+
+#[test]
+#[should_panic(expected = "3 arguments defined, 2 arguments found")]
+fn should_panic_for_too_few_args() {
+  let args=vec![String::from("test"), String::from("arg1"), String::from("arg2")];
+  let cl = CommandLineDef::new()
+      .add_argument("arg-1")
+      .add_argument("arg-2")
+      .add_argument("arg-3")
+      .parse(args.into_iter());
+
+  let arg1:String = cl.argument(0);
+  assert_eq!(arg1, "arg-1");
 }
