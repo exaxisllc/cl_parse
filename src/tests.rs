@@ -91,9 +91,9 @@ fn should_capture_interleaved_args() {
   let args=vec![
     "test".to_string(),
     "arg1".to_string(),
-    "--bool".to_string(),
-    "arg2".to_string(),
     "-n".to_string(), "-1".to_string(),
+    "arg2".to_string(),
+    "--bool".to_string(),
     "arg3".to_string(),
   ];
   let cl = CommandLineDef::new()
