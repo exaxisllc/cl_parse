@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use super::option_def::OptionDef;
-use super::{FALSE, LONG_HELP, SHORT_HELP, SHORT_OPTION, TRUE};
+use super::{FALSE, LONG_HELP, LONG_OPTION, SHORT_HELP, SHORT_OPTION, TRUE};
 use super::command_line::CommandLine;
 
 /// Defines the valid commandline options and arguments for this program
@@ -322,7 +322,25 @@ impl CommandLineDef {
         value.unwrap()
       };
       for alias in &option_def.aliases {
-        options.insert(alias.to_string(), val.to_string());
+        if options.insert(alias.to_string(), val.to_string()).is_some() {
+          panic!("Multiple {alias} options on commandline");
+        }
+      }
+    } else if !option.starts_with(LONG_OPTION) && option.starts_with(SHORT_OPTION){
+      let flags = option.trim_start_matches(SHORT_OPTION);
+      for f in flags.chars() {
+        let flag = format!("-{f}");
+        if let Some(flag_def) = self.find_option_def(flag.as_str()) {
+          if flag_def.value_name.is_none() {
+            if options.insert(flag, TRUE.to_string()).is_some() {
+              panic!("Multiple -{f} options on commandline");
+            }
+          } else {
+            panic!("Option {flag} is not a flag");
+          }
+        } else {
+          panic!("Option {flag} not defined");
+        }
       }
     } else {
       panic!("Option {option} not defined");

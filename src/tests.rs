@@ -24,6 +24,29 @@ fn should_return_default_boolean_false() {
 }
 
 #[test]
+fn should_return_concat_flags() {
+  let args=vec![String::from("test"), String::from("-dcb")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-b"], "A boolean value always defaults to false")
+      .add_flag(vec!["-c"], "Another boolean value")
+      .add_flag(vec!["-d"], "Another boolean value")
+      .add_flag(vec!["-f"], "A flag")
+      .parse(args.into_iter());
+
+  let b:bool = cl.option("-b");
+  assert_eq!(b, true);
+
+  let c:bool = cl.option("-c");
+  assert_eq!(c, true);
+
+  let d:bool = cl.option("-d");
+  assert_eq!(d, true);
+
+  let f:bool = cl.option("-f");
+  assert_eq!(f, false);
+}
+
+#[test]
 fn should_return_boolean() {
   let args=vec![String::from("test"), String::from("-c")];
   let cl = CommandLineDef::new()
@@ -149,6 +172,19 @@ fn should_panic_for_option_undefined() {
 }
 
 #[test]
+#[should_panic(expected = "Option --num cannot be redefined")]
+fn should_panic_for_option_redefined() {
+  let args=vec![String::from("test"), String::from("-n"), String::from("10")];
+  let cl = CommandLineDef::new()
+      .add_option(vec!["-n","--num"], Some("num"), None, "A numeric value")
+      .add_option(vec!["--num","--number"], Some("number"), None, "A numeric value")
+      .parse(args.into_iter());
+
+  let n:i32 = cl.option("-n");
+  assert_eq!(n, 10);
+}
+
+#[test]
 #[should_panic(expected = "A value is required for option --increment")]
 fn should_panic_for_missing_value() {
   let args=vec![String::from("test"), String::from("--increment")];
@@ -185,3 +221,55 @@ fn should_panic_for_too_few_args() {
   let arg1:String = cl.argument(0);
   assert_eq!(arg1, "arg-1");
 }
+
+#[test]
+#[should_panic(expected = "Multiple -m options on commandline")]
+fn should_panic_for_repeated_flags() {
+  let args=vec![String::from("test"), String::from("-m"), String::from("-m")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-m"], "The m flag")
+      .parse(args.into_iter());
+
+  let m:bool = cl.option("-m");
+  assert_eq!(m, true);
+}
+
+#[test]
+#[should_panic(expected = "Multiple -m options on commandline")]
+fn should_panic_for_repeated_concat_flags() {
+  let args=vec![String::from("test"), String::from("-mbm")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-b"], "The b flag")
+      .add_flag(vec!["-m"], "The m flag")
+      .parse(args.into_iter());
+
+  let m:bool = cl.option("-m");
+  assert_eq!(m, true);
+}
+
+#[test]
+#[should_panic(expected = "Option -b is not a flag")]
+fn should_panic_for_not_a_concat_flag() {
+  let args=vec![String::from("test"), String::from("-mb")];
+  let cl = CommandLineDef::new()
+      .add_option(vec!["-b"], Some("Batch Size"),Some("10"),"Batch Size")
+      .add_flag(vec!["-m"], "The m flag")
+      .parse(args.into_iter());
+
+  let m:bool = cl.option("-m");
+  assert_eq!(m, true);
+}
+
+#[test]
+#[should_panic(expected = "Option -u not defined")]
+fn should_panic_for_undefined_concat_flags() {
+  let args=vec![String::from("test"), String::from("-mbu")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-b"], "The b flag")
+      .add_flag(vec!["-m"], "The m flag")
+      .parse(args.into_iter());
+
+  let m:bool = cl.option("-m");
+  assert_eq!(m, true);
+}
+

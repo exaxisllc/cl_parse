@@ -147,7 +147,7 @@ impl CommandLine {
       Some(argument) => {
         match T::from_str(argument) {
           Ok(t) => t,
-          Err(e) => panic!("Cannot convert argument({index}) from '{argument}'")
+          Err(_) => panic!("Cannot convert argument({index}) from '{argument}'")
         }
       }
       None => panic!("Argument index '{index}' is out of bounds")
