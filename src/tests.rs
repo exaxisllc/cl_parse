@@ -148,6 +148,77 @@ fn should_capture_interleaved_args() {
 }
 
 #[test]
+#[should_panic(expected = "Invalid option name '---------'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+fn should_panic_for_bad_long_option() {
+  let args=vec![String::from("test"), String::from("--long")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["---------"], "A bad long option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("--long");
+  assert_eq!(long, true);
+}
+#[test]
+#[should_panic(expected = "Invalid option name '---long'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+fn should_panic_for_bad_long_option_1() {
+  let args=vec![String::from("test"), String::from("--long")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["---long"], "A bad long option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("--long");
+  assert_eq!(long, true);
+}
+
+#[test]
+#[should_panic(expected = "Invalid option name '--l'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+fn should_panic_for_bad_long_option_2() {
+  let args=vec![String::from("test"), String::from("--long")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["--l"], "A bad long option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("--long");
+  assert_eq!(long, true);
+}
+
+#[test]
+#[should_panic(expected = "Invalid option name '-'. Short option names must start with '-' and be 1 character. e.g. -f")]
+fn should_panic_for_bad_short_option() {
+  let args=vec![String::from("test"), String::from("-s")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-"], "A bad short option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("-s");
+  assert_eq!(long, true);
+}
+
+#[test]
+#[should_panic(expected = "Invalid option name '-short'. Short option names must start with '-' and be 1 character. e.g. -f")]
+fn should_panic_for_bad_short_option_1() {
+  let args=vec![String::from("test"), String::from("-s")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["-short"], "A bad short option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("-s");
+  assert_eq!(long, true);
+}
+
+#[test]
+#[should_panic(expected = "Invalid option name 'opt'. Options must start with '-' or '--'")]
+fn should_panic_for_bad_option() {
+  let args=vec![String::from("test"), String::from("opt")];
+  let cl = CommandLineDef::new()
+      .add_flag(vec!["opt"], "A bad option")
+      .parse(args.into_iter());
+
+  let long:bool = cl.option("opt");
+  assert_eq!(long, true);
+}
+
+#[test]
 #[should_panic(expected = "Option --increment is required")]
 fn should_panic_for_missing_required_option() {
   let args=vec![String::from("test"), String::from("-c")];
