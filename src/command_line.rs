@@ -89,14 +89,10 @@ impl CommandLine {
   #[inline]
   pub fn option<T>(&self, name:&str) -> T
   where T: FromStr {
-    match self.options.get(name) {
-      Some(option) => {
-        match T::from_str(option) {
-          Ok(t) => t,
-          Err(_) => panic!("Cannot convert '{name}' from '{option}'")
-        }
-      }
-      None => panic!("Option '{name}' not found")
+    let option = self.options.get(name).expect(format!("Option '{name}' not found").as_str());
+    match T::from_str(option) {
+      Ok(t) => t,
+      Err(_) => panic!("Cannot convert '{name}' from '{option}'")
     }
   }
 
@@ -143,14 +139,10 @@ impl CommandLine {
   #[inline]
   pub fn argument<T>(&self, index:usize)  -> T
   where T: FromStr {
-    match self.arguments.get(index) {
-      Some(argument) => {
-        match T::from_str(argument) {
-          Ok(t) => t,
-          Err(_) => panic!("Cannot convert argument({index}) from '{argument}'")
-        }
-      }
-      None => panic!("Argument index '{index}' is out of bounds")
+    let argument = self.arguments.get(index).expect(format!("Argument index '{index}' is out of bounds").as_str());
+    match T::from_str(argument) {
+      Ok(t) => t,
+      Err(_) => panic!("Cannot convert argument({index}) from '{argument}'")
     }
   }
 

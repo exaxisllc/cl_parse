@@ -124,7 +124,7 @@ impl CommandLineDef {
   /// ```
   #[inline]
   pub fn add_option(&mut self, aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
-    let default = if let Some(_) = value_name { default_value } else { Some(FALSE) };
+    let default = if value_name.is_some() { default_value } else { Some(FALSE) };
     self.option_defs.push(OptionDef::new(aliases, value_name, default, description));
     let od_idx = self.option_defs.len()-1;
     for alias in &self.option_defs[od_idx].aliases {
@@ -286,10 +286,8 @@ impl CommandLineDef {
 
   #[inline]
   fn find_option_def(&self, option:&str) -> Option<&OptionDef> {
-    match self.option_def_map.get(option) {
-      None => None,
-      Some(od_idx) => Some(&self.option_defs[*od_idx])
-    }
+    let od_idx = self.option_def_map.get(option)?;
+    Some(&self.option_defs[*od_idx])
   }
 
   #[inline]
@@ -297,11 +295,8 @@ impl CommandLineDef {
     for option in self.option_def_map.keys() {
       if !options.contains_key(*option) {
         if let Some(od) = self.find_option_def(&option) {
-          if let Some(default) = od.default_value {
-            options.insert(option.to_string(), default.to_string());
-          } else {
-            panic!("Option {option} is required");
-          }
+          let default = od.default_value.expect(format!("Option {option} is required").as_str());
+          options.insert(option.to_string(), default.to_string());
         }
       }
     }
@@ -330,7 +325,7 @@ impl CommandLineDef {
       let flags = option.trim_start_matches(SHORT_OPTION);
       for f in flags.chars() {
         let flag = format!("-{f}");
-        if let Some(flag_def) = self.find_option_def(flag.as_str()) {
+        let flag_def = self.find_option_def(flag.as_str()).expect(format!("Option {flag} not defined").as_str());
           if flag_def.value_name.is_none() {
             if options.insert(flag, TRUE.to_string()).is_some() {
               panic!("Multiple -{f} options on commandline");
@@ -338,9 +333,6 @@ impl CommandLineDef {
           } else {
             panic!("Option {flag} is not a flag");
           }
-        } else {
-          panic!("Option {flag} not defined");
-        }
       }
     } else {
       panic!("Option {option} not defined");
