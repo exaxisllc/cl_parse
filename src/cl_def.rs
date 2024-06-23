@@ -318,7 +318,7 @@ impl CommandLineDef {
       };
       for alias in &option_def.aliases {
         if options.insert(alias.to_string(), val.to_string()).is_some() {
-          panic!("Multiple {alias} options on commandline");
+          panic!("Multiple {alias} options or aliases on commandline");
         }
       }
     } else if !option.starts_with(LONG_OPTION) && option.starts_with(SHORT_OPTION){
@@ -328,7 +328,7 @@ impl CommandLineDef {
         let flag_def = self.find_option_def(flag.as_str()).expect(format!("Option {flag} not defined").as_str());
           if flag_def.value_name.is_none() {
             if options.insert(flag, TRUE.to_string()).is_some() {
-              panic!("Multiple -{f} options on commandline");
+              panic!("Multiple -{f} options or aliases on commandline");
             }
           } else {
             panic!("Option {flag} is not a flag");

@@ -294,7 +294,7 @@ fn should_panic_for_too_few_args() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple -m options on commandline")]
+#[should_panic(expected = "Multiple -m options or aliases on commandline")]
 fn should_panic_for_repeated_flags() {
   let args=vec![String::from("test"), String::from("-m"), String::from("-m")];
   let cl = CommandLineDef::new()
@@ -306,7 +306,7 @@ fn should_panic_for_repeated_flags() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple -m options on commandline")]
+#[should_panic(expected = "Multiple -m options or aliases on commandline")]
 fn should_panic_for_repeated_concat_flags() {
   let args=vec![String::from("test"), String::from("-mbm")];
   let cl = CommandLineDef::new()
@@ -342,5 +342,23 @@ fn should_panic_for_undefined_concat_flags() {
 
   let m:bool = cl.option("-m");
   assert_eq!(m, true);
+}
+
+#[test]
+#[should_panic(expected = "Multiple -f options or aliases on commandline")]
+fn should_panic_for_redefined_alias() {
+  let args=vec![
+    String::from("test"),
+    String::from("-f"),
+    String::from("path"),
+    String::from("--file"),
+    String::from("new_path")
+  ];
+  let cl = CommandLineDef::new()
+      .add_option(vec!["-f","--file"], Some("path"), None,"path")
+      .parse(args.into_iter());
+
+  let f:String = cl.option("-f");
+  assert_eq!(f, "path");
 }
 
