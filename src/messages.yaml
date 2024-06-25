@@ -1,0 +1,30 @@
+option_redefined:
+  en: Option '%{option}' cannot be redefined
+argument_defined_ne_found:
+  en: Defined %{defined} arguments, found %{found} arguments
+option_value_required:
+  en: A value is required for option '%{option}'
+option_multiple_found:
+  en: Multiple '%{option}' options or aliases on commandline
+option_multiple_flags:
+  en: Multiple '-%{option}' options or aliases on commandline
+option_invalid_flag:
+  en: Option '%{flag}' is not a flag
+option_not_defined:
+  en: Option '%{option}' not defined
+option_invalid_long_name:
+  en: Invalid option name '%{option}'. Long option names must start with '--' and be greater than 1 character. e.g. --lo
+option_invalid_short_name:
+  en: Invalid option name '%{option}'. Short option names must start with '-' and be 1 character. e.g. -f
+option_invalid_name:
+  en: Invalid option name '%{option}'. Options must start with '-' or '--'
+option_required:
+  en: Option '%{option}' is required
+option_not_found:
+  en: Option '%{option}' not found
+argument_invalid_index:
+  en: Argument index '%{index}' is out of bounds
+option_cannot_convert:
+  en: Cannot convert option '%{name}' from '%{value}'
+argument_cannot_convert:
+  en: Cannot convert argument '%{name}' from '%{value}'

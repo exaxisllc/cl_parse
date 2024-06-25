@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use crate::text::T;
 use super::option_def::OptionDef;
-use super::{FALSE, LONG_HELP, LONG_OPTION, SHORT_HELP, SHORT_OPTION, TRUE};
+use super::{FALSE, format_usage, LONG_HELP, LONG_OPTION, panic_msg, SHORT_HELP, SHORT_OPTION, TRUE};
 use super::command_line::CommandLine;
 
 /// Defines the valid commandline options and arguments for this program
@@ -129,7 +130,7 @@ impl CommandLineDef {
     let od_idx = self.option_defs.len()-1;
     for alias in &self.option_defs[od_idx].aliases {
       if self.option_def_map.insert(alias, od_idx).is_some() {
-        panic!("Option {alias} cannot be redefined")
+        panic_msg(T.option_redefined(alias));
       }
     }
     self
@@ -239,8 +240,9 @@ impl CommandLineDef {
     }
     // make sure we got the defined number of arguments
     if arguments.len() != self.argument_names.len() {
-      panic!("{defined} arguments defined, {found} arguments found",
-        defined = self.argument_names.len(), found = arguments.len());
+      panic_msg(format_usage(
+        &T.argument_defined_ne_found(self.argument_names.len(), arguments.len()),
+        &usage));
     }
     self.add_default_options(&mut options);
     CommandLine::new(program_name, options, arguments)
@@ -295,7 +297,7 @@ impl CommandLineDef {
     for option in self.option_def_map.keys() {
       if !options.contains_key(*option) {
         if let Some(od) = self.find_option_def(&option) {
-          let default = od.default_value.expect(format!("Option {option} is required").as_str());
+          let default = od.default_value.expect(&T.option_required(option));
           options.insert(option.to_string(), default.to_string());
         }
       }
@@ -311,31 +313,31 @@ impl CommandLineDef {
         TRUE
       } else {
         if value.is_none() {
-          panic!("A value is required for option {option}");
+          panic_msg(format_usage(&T.option_value_required(&option), usage));
         }
         skip=true;
         value.unwrap()
       };
       for alias in &option_def.aliases {
         if options.insert(alias.to_string(), val.to_string()).is_some() {
-          panic!("Multiple {alias} options or aliases on commandline");
+          panic_msg(format_usage(&T.option_multiple_found(alias), usage));
         }
       }
     } else if !option.starts_with(LONG_OPTION) && option.starts_with(SHORT_OPTION){
       let flags = option.trim_start_matches(SHORT_OPTION);
       for f in flags.chars() {
         let flag = format!("-{f}");
-        let flag_def = self.find_option_def(flag.as_str()).expect(format!("Option {flag} not defined").as_str());
+        let flag_def = self.find_option_def(&flag).expect(&format_usage(&T.option_not_defined(&flag), usage));
           if flag_def.value_name.is_none() {
             if options.insert(flag, TRUE.to_string()).is_some() {
-              panic!("Multiple -{f} options or aliases on commandline");
+              panic_msg(format_usage(&T.option_multiple_flags(f),usage));
             }
           } else {
-            panic!("Option {flag} is not a flag");
+            panic_msg(format_usage(&T.option_invalid_flag(&flag),usage));
           }
       }
     } else {
-      panic!("Option {option} not defined");
+      panic_msg(format_usage(&T.option_not_defined(&option), usage));
     }
     skip
   }

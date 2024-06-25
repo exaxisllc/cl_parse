@@ -52,4 +52,13 @@ pub use command_line::CommandLine;
 
 #[cfg(test)]
 mod tests;
+mod text;
+
+fn format_usage(msg: &str, usage: &str) -> String {
+  format!("{}{}", msg, usage)
+}
+
+fn panic_msg(msg: String) {
+  panic!("{}",msg)
+}
 

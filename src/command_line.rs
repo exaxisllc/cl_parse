@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
+use crate::text::T;
 
 /// Stores the parsed command line
 pub struct CommandLine {
@@ -37,7 +38,7 @@ impl CommandLine {
     CommandLine {
       program_name,
       options,
-      arguments
+      arguments,
     }
   }
 
@@ -89,10 +90,10 @@ impl CommandLine {
   #[inline]
   pub fn option<T>(&self, name:&str) -> T
   where T: FromStr {
-    let option = self.options.get(name).expect(format!("Option '{name}' not found").as_str());
+    let option = self.options.get(name).expect(&T.option_not_found(name));
     match T::from_str(option) {
       Ok(t) => t,
-      Err(_) => panic!("Cannot convert '{name}' from '{option}'")
+      Err(_) => panic!("{}",T.option_cannot_convert(name, option))
     }
   }
 
@@ -139,10 +140,10 @@ impl CommandLine {
   #[inline]
   pub fn argument<T>(&self, index:usize)  -> T
   where T: FromStr {
-    let argument = self.arguments.get(index).expect(format!("Argument index '{index}' is out of bounds").as_str());
+    let argument = self.arguments.get(index).expect(&T.argument_invalid_index(index));
     match T::from_str(argument) {
       Ok(t) => t,
-      Err(_) => panic!("Cannot convert argument({index}) from '{argument}'")
+      Err(_) => panic!("{}",T.argument_cannot_convert(index, argument))
     }
   }
 

@@ -1,4 +1,5 @@
-use crate::{LONG_OPTION, SHORT_OPTION};
+use crate::{LONG_OPTION, panic_msg, SHORT_OPTION};
+use crate::text::T;
 
 /// Defines the valid options for this program
 pub(crate) struct OptionDef {
@@ -40,7 +41,7 @@ impl OptionDef {
       description,
       aliases,
       value_name,
-      default_value
+      default_value,
     }
   }
 
@@ -49,15 +50,15 @@ impl OptionDef {
       let option_len = alias.trim_start_matches(SHORT_OPTION).len();
       if alias.starts_with(LONG_OPTION) {
         if option_len < 2 || alias.len()-option_len>2 {
-          panic!("Invalid option name '{alias}'. Long option names must start with '--' and be greater than 1 character. e.g. --lo");
+          panic_msg(T.option_invalid_long_name(alias));
         }
       } else if alias.starts_with(SHORT_OPTION) {
         if option_len==0 || option_len>1
         {
-          panic!("Invalid option name '{alias}'. Short option names must start with '-' and be 1 character. e.g. -f");
+          panic_msg(T.option_invalid_short_name(alias));
         }
       } else {
-        panic!("Invalid option name '{alias}'. Options must start with '-' or '--'");
+        panic_msg(T.option_invalid_name(alias));
       };
     }
   }
