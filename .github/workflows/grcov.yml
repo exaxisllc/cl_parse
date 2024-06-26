@@ -1,10 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -18,9 +18,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         toolchain: [stable, beta, nightly]
-    continue-on-error: true
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.toolchain }}
