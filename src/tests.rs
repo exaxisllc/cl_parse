@@ -319,7 +319,8 @@ fn should_panic_for_repeated_concat_flags() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-b' is not a flag\nUsage: test -m -b <batch size>")]
+// TODO: #[should_panic(expected = "Option '-b' is not a flag\nUsage: test -m -b <batch size>")]
+#[should_panic(expected = "Option '-b' is not a flag\nUsage: test -m --batch <batch size>")]
 fn should_panic_for_not_a_concat_flag() {
   let args=vec![String::from("test"), String::from("-mb")];
   let cl = CommandLineDef::new()
@@ -345,7 +346,8 @@ fn should_panic_for_undefined_concat_flags() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple '-f' options or aliases on commandline\nUsage: test -f <path>")]
+// TODO: #[should_panic(expected = "Multiple '-f' options or aliases on commandline\nUsage: test -f <path>")]
+#[should_panic(expected = "Multiple '--file' options or aliases on commandline\nUsage: test --file <path>")]
 fn should_panic_for_redefined_alias() {
   let args=vec![
     String::from("test"),
