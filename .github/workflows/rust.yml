@@ -31,6 +31,3 @@ jobs:
         run: cargo build --verbose
       - name: Test project
         run: cargo test --all-features --no-fail-fast --verbose
-      - name: Gather coverage data
-        id: coverage
-        uses: actions-rs/grcov@v0.1
