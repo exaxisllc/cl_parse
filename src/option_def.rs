@@ -45,6 +45,7 @@ impl OptionDef {
     }
   }
 
+  #[inline]
   fn validate_aliases(aliases:&Vec<&'static str>) {
     for alias in aliases {
       let option_len = alias.trim_start_matches(SHORT_OPTION).len();

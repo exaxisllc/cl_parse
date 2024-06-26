@@ -219,7 +219,7 @@ fn should_panic_for_bad_option() {
 }
 
 #[test]
-#[should_panic(expected = "Option '--increment' is required")]
+#[should_panic(expected = "Option '--increment' is required\nUsage: test -c --increment <numeric value>")]
 fn should_panic_for_missing_required_option() {
   let args=vec![String::from("test"), String::from("-c")];
   let cl = CommandLineDef::new()
@@ -232,7 +232,7 @@ fn should_panic_for_missing_required_option() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-c' not defined")]
+#[should_panic(expected = "Option '-c' not defined\nUsage: test")]
 fn should_panic_for_option_undefined() {
   let args=vec![String::from("test"), String::from("-c")];
   let cl = CommandLineDef::new()
@@ -256,7 +256,7 @@ fn should_panic_for_option_redefined() {
 }
 
 #[test]
-#[should_panic(expected = "A value is required for option '--increment'")]
+#[should_panic(expected = "A value is required for option '--increment'\nUsage: test --increment <numeric value>")]
 fn should_panic_for_missing_value() {
   let args=vec![String::from("test"), String::from("--increment")];
   let cl = CommandLineDef::new()
@@ -268,7 +268,7 @@ fn should_panic_for_missing_value() {
 }
 
 #[test]
-#[should_panic(expected = "Defined 1 arguments, found 2 arguments")]
+#[should_panic(expected = "Defined 1 arguments, found 2 arguments\nUsage: test <arg-1>")]
 fn should_panic_for_too_many_args() {
   let args=vec![String::from("test"), String::from("arg1"), String::from("arg2")];
   let cl = CommandLineDef::new()
@@ -280,7 +280,7 @@ fn should_panic_for_too_many_args() {
 }
 
 #[test]
-#[should_panic(expected = "Defined 3 arguments, found 2 arguments")]
+#[should_panic(expected = "Defined 3 arguments, found 2 arguments\nUsage: test <arg-1> <arg-2> <arg-3>")]
 fn should_panic_for_too_few_args() {
   let args=vec![String::from("test"), String::from("arg1"), String::from("arg2")];
   let cl = CommandLineDef::new()
@@ -294,7 +294,7 @@ fn should_panic_for_too_few_args() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple '-m' options or aliases on commandline")]
+#[should_panic(expected = "Multiple '-m' options or aliases on commandline\nUsage: test -m")]
 fn should_panic_for_repeated_flags() {
   let args=vec![String::from("test"), String::from("-m"), String::from("-m")];
   let cl = CommandLineDef::new()
@@ -306,24 +306,24 @@ fn should_panic_for_repeated_flags() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple '-m' options or aliases on commandline")]
+#[should_panic(expected = "Multiple '-b' options or aliases on commandline\nUsage: test -bm")]
 fn should_panic_for_repeated_concat_flags() {
-  let args=vec![String::from("test"), String::from("-mbm")];
+  let args=vec![String::from("test"), String::from("-bmb")];
   let cl = CommandLineDef::new()
-      .add_flag(vec!["-b"], "The b flag")
       .add_flag(vec!["-m"], "The m flag")
+      .add_flag(vec!["-b"], "The b flag")
       .parse(args.into_iter());
 
-  let m:bool = cl.option("-m");
-  assert_eq!(m, true);
+  let b:bool = cl.option("-b");
+  assert_eq!(b, true);
 }
 
 #[test]
-#[should_panic(expected = "Option '-b' is not a flag")]
+#[should_panic(expected = "Option '-b' is not a flag\nUsage: test -m -b <batch size>")]
 fn should_panic_for_not_a_concat_flag() {
   let args=vec![String::from("test"), String::from("-mb")];
   let cl = CommandLineDef::new()
-      .add_option(vec!["-b"], Some("Batch Size"),Some("10"),"Batch Size")
+      .add_option(vec!["-b", "--batch"], Some("batch size"),Some("10"),"Batch Size")
       .add_flag(vec!["-m"], "The m flag")
       .parse(args.into_iter());
 
@@ -332,12 +332,12 @@ fn should_panic_for_not_a_concat_flag() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-u' not defined")]
+#[should_panic(expected = "Option '-u' not defined\nUsage: test -bm")]
 fn should_panic_for_undefined_concat_flags() {
   let args=vec![String::from("test"), String::from("-mbu")];
   let cl = CommandLineDef::new()
-      .add_flag(vec!["-b"], "The b flag")
       .add_flag(vec!["-m"], "The m flag")
+      .add_flag(vec!["-b"], "The b flag")
       .parse(args.into_iter());
 
   let m:bool = cl.option("-m");
@@ -345,7 +345,7 @@ fn should_panic_for_undefined_concat_flags() {
 }
 
 #[test]
-#[should_panic(expected = "Multiple '-f' options or aliases on commandline")]
+#[should_panic(expected = "Multiple '-f' options or aliases on commandline\nUsage: test -f <path>")]
 fn should_panic_for_redefined_alias() {
   let args=vec![
     String::from("test"),

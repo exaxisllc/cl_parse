@@ -42,6 +42,7 @@ pub(crate) trait Text {
   fn argument_invalid_index(&self, index: usize) -> String;
   fn option_cannot_convert(&self, option: &str, value: &str) -> String;
   fn argument_cannot_convert(&self, index: usize, value: &str) -> String;
+  fn usage(&self, program_name: &str) -> String;
 }
 
 mod en_us;

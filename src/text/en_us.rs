@@ -63,4 +63,8 @@ impl Text for EnUs {
   fn argument_cannot_convert(&self, index: usize, value: &str) -> String {
     format!("Cannot convert argument '{index}' from '{value}'")
   }
+  #[inline]
+  fn usage(&self, program_name: &str) -> String {
+    format!("\nUsage: {program_name}")
+  }
 }

@@ -244,7 +244,7 @@ impl CommandLineDef {
         &T.argument_defined_ne_found(self.argument_names.len(), arguments.len()),
         &usage));
     }
-    self.add_default_options(&mut options);
+    self.add_default_options(&mut options, &usage);
     CommandLine::new(program_name, options, arguments)
   }
 
@@ -253,15 +253,17 @@ impl CommandLineDef {
     let mut usage = self.option_defs.iter().map(|od| {
       let mut option = od.aliases[0].to_string();
       if od.value_name.is_some(){
-        option.push(' ');
+        option.push_str(" <");
         option.push_str(od.value_name.unwrap());
+        option.push('>');
       }
       option
-    }).fold(program_name.to_string(),|accum, alias|  accum+" "+&alias);
+    }).fold(T.usage(program_name),|accum, alias|  accum+" "+&alias);
 
-    let arguments = self.argument_names.iter().fold(String::default(),|accum, s|  accum+" "+s);
-    usage.push(' ');
-    usage.push_str(&arguments);
+    let arguments = self.argument_names.iter().fold(String::default(),|accum, s|  accum+" <"+s+">");
+    if !arguments.is_empty() {
+      usage.push_str(&arguments);
+    }
     usage
   }
 
@@ -293,11 +295,11 @@ impl CommandLineDef {
   }
 
   #[inline]
-  fn add_default_options(&self, options: &mut HashMap<String, String>){
+  fn add_default_options(&self, options: &mut HashMap<String, String>, usage: &str, ){
     for option in self.option_def_map.keys() {
       if !options.contains_key(*option) {
         if let Some(od) = self.find_option_def(&option) {
-          let default = od.default_value.expect(&T.option_required(option));
+          let default = od.default_value.expect(&format_usage(&T.option_required(option), usage));
           options.insert(option.to_string(), default.to_string());
         }
       }
