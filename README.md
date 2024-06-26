@@ -1,5 +1,10 @@
 # Command Line Parse
 
+[![Build](https://github.com/exaxisllc/cl_parse/actions/workflows/rust.yml/badge.svg)](https://github.com/exaxisllc/cl_parse/actions/workflows/rust.yml)
+[![Coverage Status](https://coveralls.io/repos/github/exaxisllc/cl_parse/badge.svg?branch=main)](https://coveralls.io/github/exaxisllc/cl_parse?branch=main)
+[![crates.io](https://img.shields.io/crates/v/fluent.svg)](https://crates.io/crates/fluent)
+[![docs.rs](https://img.shields.io/docsrs/fluent)](https://docs.rs/fluent)
+
 `cl_parse` is a library that allows you to define commandline options and arguments and then
 parse the commandline arguments based on that definition.
 
