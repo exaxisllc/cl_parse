@@ -124,8 +124,9 @@ impl CommandLineDef {
   /// assert_eq!(pos, p);
   /// ```
   #[inline]
-  pub fn add_option(&mut self, aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
+  pub fn add_option(&mut self, mut aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
     let default = if value_name.is_some() { default_value } else { Some(FALSE) };
+    aliases.sort();
     self.option_defs.push(OptionDef::new(aliases, value_name, default, description));
     let od_idx = self.option_defs.len()-1;
     for alias in &self.option_defs[od_idx].aliases {
@@ -250,20 +251,35 @@ impl CommandLineDef {
 
   #[inline]
   fn usage(&self, program_name:&str) -> String {
-    let mut usage = self.option_defs.iter().map(|od| {
-      let mut option = od.aliases[0].to_string();
-      if od.value_name.is_some(){
-        option.push_str(" <");
-        option.push_str(od.value_name.unwrap());
-        option.push('>');
-      }
-      option
-    }).fold(T.usage(program_name),|accum, alias|  accum+" "+&alias);
+    let mut flags: Vec<char> = Vec::default();
+    let mut options: Vec<String> = Vec::default();
 
-    let arguments = self.argument_names.iter().fold(String::default(),|accum, s|  accum+" <"+s+">");
-    if !arguments.is_empty() {
-      usage.push_str(&arguments);
+    for od in &self.option_defs {
+      if od.value_name.is_some() {
+        options.push(format!("{} <{}>",od.aliases[0],od.value_name.unwrap()))
+      } else if od.aliases[0].starts_with(LONG_OPTION) {
+        options.push(format!("{}",od.aliases[0]))
+      } else {
+        flags.push(od.aliases[0].chars().last().unwrap())
+      }
     }
+
+    let mut usage = T.usage(program_name);
+
+    if !flags.is_empty() {
+      flags.sort();
+      usage.push_str(&format!(" -{}", flags.iter().fold(String::default(),|acc, c |{acc + &c.to_string()})));
+    }
+
+    if !options.is_empty() {
+      options.sort();
+      usage.push_str(&format!(" {}", options.join(" ").to_string()));
+    }
+
+    if !self.argument_names.is_empty() {
+      usage.push_str(&format!(" <{}>", self.argument_names.join("> <").to_string()));
+    }
+
     usage
   }
 

@@ -355,7 +355,7 @@ fn should_panic_for_redefined_alias() {
     String::from("new_path")
   ];
   let cl = CommandLineDef::new()
-      .add_option(vec!["-f","--file"], Some("path"), None,"path")
+      .add_option(vec!["--file","-f"], Some("path"), None,"path")
       .parse(args.into_iter());
 
   let f:String = cl.option("-f");
