@@ -1,7 +1,6 @@
 # Command Line Parse
 
 [![CI](https://github.com/exaxisllc/cl_parse/actions/workflows/ci.yml/badge.svg)](https://github.com/exaxisllc/cl_parse/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/exaxisllc/cl_parse/badge.svg?branch=main)](https://coveralls.io/github/exaxisllc/cl_parse?branch=main)
 
 `cl_parse` is a library that allows you to define commandline options and arguments and then
 parse the commandline arguments based on that definition.
