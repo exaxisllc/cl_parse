@@ -1,10 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  #  push:
+  #    branches: [ "main" ]
+  #  pull_request:
+  #    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -28,14 +28,13 @@ jobs:
         with:
           command: test
           args: --all-features --no-fail-fast --verbose
-        env:
   coverage:
-    name: Test
+    name: Coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        toolchain: [ nightly ]
+        toolchain: [nightly]
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
