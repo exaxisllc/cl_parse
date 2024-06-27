@@ -126,7 +126,7 @@ impl CommandLineDef {
   #[inline]
   pub fn add_option(&mut self, mut aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
     let default = if value_name.is_some() { default_value } else { Some(FALSE) };
-    aliases.sort();
+    aliases.sort_by(|a,b| a.trim_start_matches(SHORT_OPTION).cmp(b.trim_start_matches(SHORT_OPTION)));
     self.option_defs.push(OptionDef::new(aliases, value_name, default, description));
     let od_idx = self.option_defs.len()-1;
     for alias in &self.option_defs[od_idx].aliases {
@@ -272,7 +272,7 @@ impl CommandLineDef {
     }
 
     if !options.is_empty() {
-      options.sort();
+      options.sort_by(|a,b| a.trim_start_matches(SHORT_OPTION).cmp(b.trim_start_matches(SHORT_OPTION)));
       usage.push_str(&format!(" {}", options.join(" ").to_string()));
     }
 
