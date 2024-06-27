@@ -50,8 +50,6 @@ mod command_line;
 pub use cl_def::CommandLineDef;
 pub use command_line::CommandLine;
 
-#[cfg(test)]
-mod tests;
 mod text;
 
 fn format_usage(msg: &str, usage: &str) -> String {

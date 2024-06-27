@@ -1,4 +1,4 @@
-use crate::cl_def::CommandLineDef;
+use cl_parse::CommandLineDef;
 
 #[test]
 fn should_return_default_boolean_false() {
