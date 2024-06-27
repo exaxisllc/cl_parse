@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::HashMap;
 use crate::text::T;
 use super::option_def::OptionDef;
@@ -253,8 +254,13 @@ impl CommandLineDef {
   fn usage(&self, program_name:&str) -> String {
     let mut flags: Vec<char> = Vec::default();
     let mut options: Vec<String> = Vec::default();
+    let mut help_lines: Vec<(String, String)> = Vec::default();
+    let mut max_len = 0;
 
     for od in &self.option_defs {
+      let help_options = od.aliases.join(", ");
+      max_len = max(max_len, help_options.len());
+      help_lines.push((help_options, od.description.to_string()));
       if od.value_name.is_some() {
         options.push(format!("{} <{}>",od.aliases[0],od.value_name.unwrap()))
       } else if od.aliases[0].starts_with(LONG_OPTION) {
@@ -278,6 +284,10 @@ impl CommandLineDef {
 
     if !self.argument_names.is_empty() {
       usage.push_str(&format!(" <{}>", self.argument_names.join("> <").to_string()));
+    }
+
+    for (options, description) in help_lines {
+      usage.push_str(&format!("\n{:>max_len$} : {}", options, description));
     }
 
     usage
