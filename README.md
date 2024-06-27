@@ -1,6 +1,6 @@
 # Command Line Parse
 
-[![CI](https://github.com/exaxisllc/cl_parse/actions/workflows/ci.yml/badge.svg)](https://github.com/exaxisllc/cl_parse/actions/workflows/ci.yml)
+[![CI](https://github.com/exaxisllc/cl_parse/actions/workflows/test.yml/badge.svg)](https://github.com/exaxisllc/cl_parse/actions/workflows/test.yml)
 
 `cl_parse` is a library that allows you to define commandline options and arguments and then
 parse the commandline arguments based on that definition.
