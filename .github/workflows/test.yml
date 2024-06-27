@@ -1,4 +1,4 @@
-name: Test
+name: Test Coverage
 
 on:
 #  push:
@@ -28,7 +28,7 @@ jobs:
       - name: Test project
         run: cargo test
   coverage:
-    name: Test
+    name: Coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -44,7 +44,7 @@ jobs:
       - name: Install coverage tool
         run: cargo +stable install cargo-llvm-cov --locked
       - name: Test project and generate coverage report
-        run: cargo llvm-cov --branch --doctests --summary-only --lcov --output-path lcov.info
+        run: cargo llvm-cov --fail-under-functions 80 --fail-under-lines 80 --fail-under-regions 80 --branch --doctests --summary-only --lcov --output-path lcov.info
       - name: Publish coverage summary to job summary
         uses: livewing/lcov-job-summary@v1.1.0
         with:
