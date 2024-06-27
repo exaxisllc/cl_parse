@@ -11,8 +11,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_and_test:
-    name: Test latest
+  test:
+    name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -25,11 +25,26 @@ jobs:
         run: |
           rustup update ${{ matrix.toolchain }}
           rustup default ${{ matrix.toolchain }}
+      - name: Test project
+        run: cargo test
+  coverage:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        toolchain: [ nightly ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update tool chain
+        run: |
+          rustup update ${{ matrix.toolchain }}
+          rustup default ${{ matrix.toolchain }}
           rustup component add llvm-tools-preview --toolchain ${{ matrix.toolchain }}
       - name: Install coverage tool
-        run:  cargo +stable install cargo-llvm-cov --locked
+        run: cargo +stable install cargo-llvm-cov --locked
       - name: Test project and generate coverage report
-        run: cargo llvm-cov --summary-only --lcov --output-path lcov.info
+        run: cargo llvm-cov --branch --doctests --summary-only --lcov --output-path lcov.info
       - name: Publish coverage summary to job summary
         uses: livewing/lcov-job-summary@v1.1.0
         with:
