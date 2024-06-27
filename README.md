@@ -27,7 +27,7 @@ implemented in cl_parse.
 
 ```
 use std::env;
-use cl_parse::{CommandLine, CommandLineDef};
+use cl_parse::CommandLineDef;
 
 let cl = CommandLineDef::new()
 .add_flag(vec!["-b","--boolean"], "A boolean value")
@@ -38,6 +38,7 @@ let cl = CommandLineDef::new()
 .add_argument("arg-2")
 .parse(env::args());
 
+// The asserts assume the following commandline
 // program arg1 --boolean arg2 -n -1 arg3
 assert_eq!(cl.program_name(), "program");
 
