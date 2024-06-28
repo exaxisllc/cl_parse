@@ -59,7 +59,7 @@ impl CommandLine {
   ///   .parse(env_args.into_iter());
   ///
   ///   // Test Program Name
-  ///   assert_eq!(cl.options(), 3); // -f, --filename, -b
+  ///   assert_eq!(cl.options(), 5); // -f, --filename, -b, -h, --help
   /// ```
   #[inline]
   pub fn options(self) -> usize {

@@ -19,11 +19,13 @@ impl CommandLineDef {
   /// Creates a new CommandLineDef
   #[inline]
   pub fn new() -> Self {
-    CommandLineDef {
+    let mut cl_def = CommandLineDef {
       option_defs:Vec::default(),
       option_def_map:HashMap::default(),
       argument_names:Vec::default(),
-    }
+    };
+    cl_def.add_option(vec!["-h", "--help"], None, None, "Display usage message");
+    cl_def
   }
 
   /// A convenience function for adding flag options.
@@ -222,12 +224,11 @@ impl CommandLineDef {
 
     let program_name = peekable_args.next().unwrap_or_else(String::default);
     let usage = self.usage(&program_name);
-    let help = self.help();
     let mut skip_next = false;
 
     while let Some(arg) = peekable_args.next() {
       if arg == SHORT_HELP || arg == LONG_HELP {
-        panic!("{}", help);
+        panic!("{}", usage);
       }
       if !skip_next {
         skip_next = if arg.starts_with(SHORT_OPTION) {
@@ -254,32 +255,45 @@ impl CommandLineDef {
   fn usage(&self, program_name:&str) -> String {
     let mut flags: Vec<char> = Vec::default();
     let mut options: Vec<String> = Vec::default();
+    let mut requireds: Vec<String> = Vec::default();
     let mut help_lines: Vec<(String, String)> = Vec::default();
     let mut max_len = 0;
 
     for od in &self.option_defs {
-      let help_options = od.aliases.join(", ");
-      max_len = max(max_len, help_options.len());
-      help_lines.push((help_options, od.description.to_string()));
+      let mut help_options = od.aliases.join(", ");
       if od.value_name.is_some() {
-        options.push(format!("{} <{}>",od.aliases[0],od.value_name.unwrap()))
+        let value_name = od.value_name.unwrap();
+        help_options = format!("{} <{}>", help_options, value_name);
+        if od.default_value.is_none() {
+          requireds.push(format!("{} <{}>",od.aliases[0],value_name));
+        } else {
+          options.push(format!("[{} <{}>]",od.aliases[0],value_name));
+        }
       } else if od.aliases[0].starts_with(LONG_OPTION) {
         options.push(format!("{}",od.aliases[0]))
       } else {
         flags.push(od.aliases[0].chars().last().unwrap())
       }
+      max_len = max(max_len, help_options.len());
+      help_lines.push((help_options, od.description.to_string()));
     }
 
     let mut usage = T.usage(program_name);
 
     if !flags.is_empty() {
       flags.sort();
-      usage.push_str(&format!(" -{}", flags.iter().fold(String::default(),|acc, c |{acc + &c.to_string()})));
+      usage.push_str(&format!(" [-{}]", flags.iter().fold(String::default(),|acc, c |{acc + &c.to_string()})));
     }
 
     if !options.is_empty() {
       options.sort_by(|a,b| a.trim_start_matches(SHORT_OPTION).cmp(b.trim_start_matches(SHORT_OPTION)));
       usage.push_str(&format!(" {}", options.join(" ").to_string()));
+    }
+
+    let x: &[_] = &['[', '-'];
+    if !requireds.is_empty() {
+      requireds.sort_by(|a,b| a.trim_start_matches(x).cmp(b.trim_start_matches(x)));
+      usage.push_str(&format!(" {}", requireds.join(" ").to_string()));
     }
 
     if !self.argument_names.is_empty() {
@@ -290,27 +304,6 @@ impl CommandLineDef {
       usage.push_str(&format!("\n{:>max_len$} : {}", options, description));
     }
 
-    usage
-  }
-
-  #[inline]
-  fn help(&self) -> String {
-    let mut usage:String = String::default();
-    usage.push(' ');
-
-    let options = self.option_defs.iter().map(|od| {
-      let mut option = od.aliases[0].to_string();
-      if od.value_name.is_some(){
-        option.push(' ');
-        option.push_str(od.value_name.unwrap());
-      }
-      option
-    }).fold(String::default(),|accum, alias|  accum+" "+&alias);
-    usage.push_str(&options);
-    usage.push(' ');
-
-    let arguments = self.argument_names.iter().fold(String::default(),|accum, s|  accum+" "+s);
-    usage.push_str(&arguments);
     usage
   }
 

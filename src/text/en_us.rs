@@ -65,6 +65,6 @@ impl Text for EnUs {
   }
   #[inline]
   fn usage(&self, program_name: &str) -> String {
-    format!("\nUsage: {program_name}")
+    format!("Usage: {program_name}")
   }
 }

@@ -53,7 +53,7 @@ pub use command_line::CommandLine;
 mod text;
 
 fn format_usage(msg: &str, usage: &str) -> String {
-  format!("{}{}", msg, usage)
+  format!("{}\n{}", msg, usage)
 }
 
 fn panic_msg(msg: String) {
