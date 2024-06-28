@@ -2,8 +2,16 @@
 name = "cl_parse"
 version = "0.1.1"
 edition = "2021"
+authors = ["berryware"]
+description = "A library for defining and parsing commandline options and arguments"
+repository = "https://github.com/exaxisllc/cl_parse"
+documentation = "https://docs.rs/cl_parse/"
+license = "MIT"
+keywords = ["event", "color", "cli", "input", "terminal"]
+exclude = ["target"]
+readme = "README.md"
+categories = ["command-line-interface", "command-line-utilities"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 sys-locale = "0.3.1"
