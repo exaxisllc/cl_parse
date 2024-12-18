@@ -385,13 +385,13 @@ fn should_display_h_help() {
 }
 
 #[test]
-#[should_panic(expected = "Usage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value")]
+#[should_panic(expected = "Option '-e' not defined\nUsage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value")]
 fn should_display_help_help() {
   let env_args = vec![
     String::from("test"),
     String::from("-b"),
-    String::from("-help"),
     String::from("--faux"),
+    String::from("-help"),
     String::from("-n"),
     String::from("-1"),
   ];
@@ -403,5 +403,17 @@ fn should_display_help_help() {
       .add_argument("arg-0")
       .add_argument("arg-1")
       .add_argument("arg-2")
+      .parse(env_args.into_iter());
+}
+
+#[test]
+#[should_panic(expected = "Option '-e' not defined\nUsage: test [-h]\n-h, --help : Display usage message")]
+fn should_panic_undefined_flag() {
+  let env_args = vec![
+    String::from("test"),
+    String::from("-help"),
+  ];
+
+  CommandLineDef::new()
       .parse(env_args.into_iter());
 }

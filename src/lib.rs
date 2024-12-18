@@ -52,10 +52,12 @@ pub use command_line::CommandLine;
 
 mod text;
 
+#[inline]
 fn format_usage(msg: &str, usage: &str) -> String {
   format!("{}\n{}", msg, usage)
 }
 
+#[inline]
 fn panic_msg(msg: String) {
   panic!("{}",msg)
 }
