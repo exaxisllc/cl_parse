@@ -13,6 +13,8 @@ pub(crate) struct OptionDef {
   pub(crate) default_value:Option<&'static str>,
   /// The description of this option. e.g. The file to be read.
   pub(crate) description:&'static str,
+  /// Valid values accepted in this option
+  pub(crate) valid_values:Vec<&'static str>,
 }
 
 impl OptionDef {
@@ -35,13 +37,16 @@ impl OptionDef {
   /// * Panics if the alias starts with '-' and the length is not equal to 2
   ///
   #[inline]
-  pub(crate) fn new(aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> Self {
+  pub(crate) fn new(aliases:Vec<&'static str>, value_name:Option<&'static str>, 
+                    default_value:Option<&'static str>, description:&'static str,
+                    valid_values: Vec<&'static str>) -> Self {
     Self::validate_aliases(&aliases);
     OptionDef {
       description,
       aliases,
       value_name,
       default_value,
+      valid_values
     }
   }
 

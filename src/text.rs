@@ -34,11 +34,14 @@ pub(crate) trait Text {
   fn option_multiple_flags(&self, flag: char) -> String;
   fn option_invalid_flag(&self, option: &str) -> String;
   fn option_not_defined(&self, option: &str) -> String;
+  fn flag_not_defined(&self, flag: &str) -> String;
   fn option_invalid_long_name(&self, option: &str) -> String;
   fn option_invalid_short_name(&self, option: &str) -> String;
   fn option_invalid_name(&self, option: &str) -> String;
   fn option_required(&self, option: &str) -> String;
   fn option_not_found(&self, option: &str) -> String;
+  fn option_value_invalid(&self, option: &str, valid_values: &Vec<&'static str>) -> String;
+
   fn argument_invalid_index(&self, index: usize) -> String;
   fn option_cannot_convert(&self, option: &str, value: &str) -> String;
   fn argument_cannot_convert(&self, index: usize, value: &str) -> String;

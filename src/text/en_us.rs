@@ -32,6 +32,10 @@ impl Text for EnUs {
     format!("Option '{option}' not defined")
   }
   #[inline]
+  fn flag_not_defined(&self, flag: &str) -> String {
+    format!("Flag '{flag}' not defined")
+  }
+  #[inline]
   fn option_invalid_long_name(&self, option: &str) -> String {
     format!("Invalid option name '{option}'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")
   }
@@ -50,6 +54,11 @@ impl Text for EnUs {
   #[inline]
   fn option_not_found(&self, option: &str) -> String {
     format!("Option '{option}' not found")
+  }
+  #[inline]
+  fn option_value_invalid(&self, option: &str, valid_values: &Vec<&'static str>) -> String {
+    let vv = valid_values.join(",");
+    format!("Option '{option}' must be one of [{vv}]")
   }
   #[inline]
   fn argument_invalid_index(&self, index: usize) -> String {

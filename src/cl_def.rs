@@ -127,10 +127,53 @@ impl CommandLineDef {
   /// assert_eq!(pos, p);
   /// ```
   #[inline]
-  pub fn add_option(&mut self, mut aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
+  pub fn add_option(&mut self, aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
+    self.add_option_with_values(aliases, value_name, default_value, description, Vec::new())
+  }
+
+  /// Adds a new option definition to this commandline definition
+  ///
+  /// # Arguments
+  ///
+  /// * `aliases` - The aliases for this option. e.g. `"-n","--negative"`
+  /// * `value_name` - The `Option<&'static str>` name for the value associated with the option.
+  /// If set to `None`, this option will be treated as a flag, and its value will default to "false".
+  /// * `default_value` - An `Option<T>` containing the value to use if one is not supplied. If `None`,
+  /// then this option will be considered required and will panic if this option is not specified on
+  /// the commandline. If `value_name`==`None`, `default_value` will be ignored.
+  /// * `description` - The description of this option. e.g. `A negative number`.
+  /// * `valid_values` - a vector of valid values to validate the option against
+  ///
+  /// # Panics
+  ///
+  /// * Panics if the alias does not start with '-' or '--'.
+  /// * Panics if the alias starts with '--' and the length is less than 4
+  /// * Panics if the alias starts with '-' and the length is not equal to 2
+  /// * Panics if an alias is defined more than once
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use cl_parse::CommandLineDef;
+  /// let args=vec![
+  ///   "program".to_string(),
+  ///   "--level".to_string(), "low".to_string()
+  /// ];
+  /// let cl = CommandLineDef::new()
+  ///   .add_option_with_values(vec!["--level"], Some("level"), Some("med"), "Operating Speed", vec!["low", "med", "high"])
+  ///   .parse(args.into_iter());
+  ///
+  /// assert_eq!(cl.program_name(), "program");
+  ///
+  /// let level = cl.option("--level");
+  /// assert_eq!(level, "low");
+  ///
+  /// ```
+  #[inline]
+  pub fn add_option_with_values(&mut self, mut aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str, valid_values: Vec<&'static str>) -> &mut Self {
     let default = if value_name.is_some() { default_value } else { Some(FALSE) };
     aliases.sort_by(|a,b| a.trim_start_matches(SHORT_OPTION).cmp(b.trim_start_matches(SHORT_OPTION)));
-    self.option_defs.push(OptionDef::new(aliases, value_name, default, description));
+    self.option_defs.push(OptionDef::new(aliases, value_name, default, description, valid_values));
     let od_idx = self.option_defs.len()-1;
     for alias in &self.option_defs[od_idx].aliases {
       if self.option_def_map.insert(alias, od_idx).is_some() {
@@ -247,7 +290,7 @@ impl CommandLineDef {
         &T.argument_defined_ne_found(self.argument_names.len(), arguments.len()),
         &usage));
     }
-    self.add_default_options(&mut options, &usage);
+    self.validate_options(&mut options, &usage);
     CommandLine::new(program_name, options, arguments)
   }
 
@@ -256,7 +299,7 @@ impl CommandLineDef {
     let mut flags: Vec<char> = Vec::default();
     let mut options: Vec<String> = Vec::default();
     let mut requireds: Vec<String> = Vec::default();
-    let mut help_lines: Vec<(String, String)> = Vec::default();
+    let mut help_lines: Vec<(String, String, String)> = Vec::default();
     let mut max_len = 0;
 
     for od in &self.option_defs {
@@ -275,7 +318,12 @@ impl CommandLineDef {
         flags.push(od.aliases[0].chars().last().unwrap())
       }
       max_len = max(max_len, help_options.len());
-      help_lines.push((help_options, od.description.to_string()));
+      let valid_values = if od.valid_values.is_empty() {
+        "".to_string()
+      } else{
+        od.valid_values.join(",")
+      };
+      help_lines.push((help_options, od.description.to_string(), valid_values));
     }
 
     let mut usage = T.usage(program_name);
@@ -300,8 +348,12 @@ impl CommandLineDef {
       usage.push_str(&format!(" <{}>", self.argument_names.join("> <").to_string()));
     }
 
-    for (options, description) in help_lines {
-      usage.push_str(&format!("\n{:>max_len$} : {}", options, description));
+    for (options, description, valid_values) in help_lines {
+      if valid_values.is_empty(){
+        usage.push_str(&format!("\n{:>max_len$} : {}", options, description));
+      } else {
+        usage.push_str(&format!("\n{:>max_len$} : [{}]. {}", options, valid_values, description));
+      }
     }
 
     usage
@@ -314,7 +366,7 @@ impl CommandLineDef {
   }
 
   #[inline]
-  fn add_default_options(&self, options: &mut HashMap<String, String>, usage: &str, ){
+  fn validate_options(&self, options: &mut HashMap<String, String>, usage: &str, ){
     for option in self.option_def_map.keys() {
       if !options.contains_key(*option) {
         if let Some(od) = self.find_option_def(&option) {
@@ -322,6 +374,11 @@ impl CommandLineDef {
           options.insert(option.to_string(), default.to_string());
         }
       }
+      let od = self.find_option_def(*option).unwrap();
+      let value = options.get(*option).unwrap().as_str();
+      if !od.valid_values.is_empty() && !od.valid_values.contains(&value) {
+        panic_msg(format_usage(&T.option_value_invalid(option, &od.valid_values), usage));
+      } 
     }
   }
 
@@ -348,7 +405,7 @@ impl CommandLineDef {
       let flags = option.trim_start_matches(SHORT_OPTION);
       for f in flags.chars() {
         let flag = format!("-{f}");
-        let flag_def = self.find_option_def(&flag).expect(&format_usage(&T.option_not_defined(&flag), usage));
+        let flag_def = self.find_option_def(&flag).expect(&format_usage(&T.flag_not_defined(&flag), usage));
           if flag_def.value_name.is_none() {
             if options.insert(flag, TRUE.to_string()).is_some() {
               panic_msg(format_usage(&T.option_multiple_flags(f),usage));

@@ -232,8 +232,8 @@ fn should_panic_for_missing_required_option() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-c' not defined\nUsage: test [-h]")]
-fn should_panic_for_option_undefined() {
+#[should_panic(expected = "Flag '-c' not defined\nUsage: test [-h]")]
+fn should_panic_for_flag_undefined() {
   let env_args = vec![String::from("test"), String::from("-c")];
   let cl = CommandLineDef::new()
       .parse(env_args.into_iter());
@@ -332,7 +332,7 @@ fn should_panic_for_not_a_concat_flag() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-u' not defined\nUsage: test [-bhm]")]
+#[should_panic(expected = "Flag '-u' not defined\nUsage: test [-bhm]")]
 fn should_panic_for_undefined_concat_flags() {
   let env_args=vec![String::from("test"), String::from("-mbu")];
   let cl = CommandLineDef::new()
@@ -385,7 +385,7 @@ fn should_display_h_help() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-e' not defined\nUsage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value")]
+#[should_panic(expected = "Flag '-e' not defined\nUsage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value")]
 fn should_display_help_help() {
   let env_args = vec![
     String::from("test"),
@@ -407,7 +407,7 @@ fn should_display_help_help() {
 }
 
 #[test]
-#[should_panic(expected = "Option '-e' not defined\nUsage: test [-h]\n-h, --help : Display usage message")]
+#[should_panic(expected = "Flag '-e' not defined\nUsage: test [-h]\n-h, --help : Display usage message")]
 fn should_panic_undefined_flag() {
   let env_args = vec![
     String::from("test"),
@@ -416,4 +416,61 @@ fn should_panic_undefined_flag() {
 
   CommandLineDef::new()
       .parse(env_args.into_iter());
+}
+
+#[test]
+#[should_panic(expected = "Option '--level' must be one of [low,med,high]\nUsage: test [-h] [--level <level>]\n     -h, --help : Display usage message\n--level <level> : [low,med,high]. Operating Speed")]
+fn should_panic_invalid_default_value() {
+  let env_args = vec![
+    String::from("test"),
+  ];
+
+  CommandLineDef::new()
+    .add_option_with_values(vec!["--level"], Some("level"), Some("lo"), "Operating Speed", vec!["low", "med", "high"])
+    .parse(env_args.into_iter());
+
+}
+
+#[test]
+#[should_panic(expected = "Option '--level' must be one of [low,med,high]\nUsage: test [-h] --level <level>\n     -h, --help : Display usage message\n--level <level> : [low,med,high]. Operating Speed")]
+fn should_panic_invalid_value() {
+  let env_args = vec![
+    String::from("test"),
+    String::from("--level"),
+    String::from("lo"),
+  ];
+
+  CommandLineDef::new()
+      .add_option_with_values(vec!["--level"], Some("level"), None, "Operating Speed", vec!["low", "med", "high"])
+      .parse(env_args.into_iter());
+}
+
+#[test]
+fn should_accept_valid_default_value() {
+  let env_args = vec![
+    String::from("test"),
+  ];
+
+  let cl = CommandLineDef::new()
+      .add_option_with_values(vec!["--level"], Some("level"), Some("med"), "Operating Speed", vec!["low", "med", "high"])
+      .parse(env_args.into_iter());
+
+  let level:String = cl.option("--level");
+  assert_eq!(level, "med");
+}
+
+#[test]
+fn should_accept_valid_value() {
+  let env_args = vec![
+    String::from("test"),
+    String::from("--level"),
+    String::from("med"),
+  ];
+
+  let cl = CommandLineDef::new()
+      .add_option_with_values(vec!["--level"], Some("level"), None, "Operating Speed", vec!["low", "med", "high"])
+      .parse(env_args.into_iter());
+
+  let level:String = cl.option("--level");
+  assert_eq!(level, "med");
 }
