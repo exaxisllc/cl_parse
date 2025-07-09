@@ -20,6 +20,7 @@ implemented in cl_parse.
  - missing value detection for options
  - ability to define required options
  - option and argument validation. i.e. only defined options and arguments can be used
+ - option value validation. e.g. --level vec!["low","med","high"]
  - unordered options and arguments
  - retrieving the option or argument in the target type. e.g. i32, String, etc.
 
@@ -33,13 +34,14 @@ let cl = CommandLineDef::new()
 .add_flag(vec!["-b","--boolean"], "A boolean value")
 .add_flag(vec!["-f","--faux"], "Another boolean value")
 .add_option(vec!["-n","--num"], Some("num"), None, "A required numeric value")
+.add_option_with_values(vec!["--level"], Some("level"), Some("med"), "Operating Speed", vec!["low", "med", "high"])
 .add_argument("arg-0")
 .add_argument("arg-1")
 .add_argument("arg-2")
 .parse(env::args());
 
 // The asserts assume the following commandline
-// program arg1 --boolean arg2 -n -1 arg3
+// program arg1 --boolean arg2 -n -1 arg3 --level low
 assert_eq!(cl.program_name(), "program");
 
 // aliases are updated
@@ -59,6 +61,9 @@ assert_eq!(faux,false);
 
 let n:i16 = cl.option("-n");
 assert_eq!(n, -1);
+
+let level:String = cl.option("--level");
+assert_eq!(level, "low");
 
 assert_eq!(cl.arguments(), 3);
 
