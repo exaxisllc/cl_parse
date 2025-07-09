@@ -165,7 +165,7 @@ impl CommandLineDef {
   ///
   /// assert_eq!(cl.program_name(), "program");
   ///
-  /// let level = cl.option("--level");
+  /// let level:String = cl.option("--level");
   /// assert_eq!(level, "low");
   ///
   /// ```
