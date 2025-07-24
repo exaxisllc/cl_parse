@@ -25,18 +25,6 @@
 //!
 #![deny(missing_docs)]
 
-const SHORT_OPTION: &'static str = "-";
-const LONG_OPTION: &'static str = "--";
-const SHORT_HELP: &'static str = "-h";
-const LONG_HELP: &'static str = "--help";
-const TRUE: &'static str = "true";
-const FALSE: &'static str = "false";
-
-/// # Option Def
-///
-/// `option_def` is used by cl_def to define options
-mod option_def;
-
 /// # Command Line Def
 ///
 /// `cl_def` is used to define and parse commandline options and arguments
@@ -51,14 +39,3 @@ pub use cl_def::CommandLineDef;
 pub use command_line::CommandLine;
 
 mod text;
-
-#[inline]
-fn format_usage(msg: &str, usage: &str) -> String {
-  format!("{}\n{}", msg, usage)
-}
-
-#[inline]
-fn panic_msg(msg: String) {
-  panic!("{}",msg)
-}
-
