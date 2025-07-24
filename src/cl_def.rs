@@ -21,6 +21,7 @@ fn panic_msg(msg: String) {
 }
 
 /// Defines the valid commandline options and arguments for this program
+#[derive(Default)]
 pub struct CommandLineDef {
   /// The list of option_defs added
   option_defs: Vec<OptionDef>,
