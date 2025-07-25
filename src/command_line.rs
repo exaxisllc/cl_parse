@@ -33,7 +33,6 @@ impl CommandLine {
   ///   // Test Program Name
   ///   assert_eq!(true, cl.program_name().is_empty());
   /// ```
-  #[inline]
   pub(crate) fn new(program_name: String, options: HashMap<String, String>, arguments: Vec<String>) -> Self {
     CommandLine {
       program_name,
@@ -61,7 +60,6 @@ impl CommandLine {
   ///   // Test Program Name
   ///   assert_eq!(cl.options(), 5); // -f, --filename, -b, -h, --help
   /// ```
-  #[inline]
   pub fn options(self) -> usize {
     self.options.len()
   }
@@ -86,8 +84,6 @@ impl CommandLine {
   ///   // Test Program Name
   ///   assert_eq!(filename, "/file/path".to_string());
   /// ```
-
-  #[inline]
   pub fn option<T>(&self, name:&str) -> T
   where T: FromStr {
     let option = self.options.get(name).expect(&T.option_not_found(name));
@@ -113,7 +109,6 @@ impl CommandLine {
   ///   // Test Program Name
   ///   assert_eq!(cl.arguments(), 0);
   /// ```
-  #[inline]
   pub fn arguments(&self) -> usize {
     self.arguments.len()
   }
@@ -137,7 +132,6 @@ impl CommandLine {
   ///  assert_eq!(arg0, "arg1");
   ///
   /// ```
-  #[inline]
   pub fn argument<T>(&self, index:usize)  -> T
   where T: FromStr {
     let argument = self.arguments.get(index).expect(&T.argument_invalid_index(index));
@@ -163,7 +157,6 @@ impl CommandLine {
   ///   // Test Program Name
   ///   assert_eq!(false, cl.program_name().is_empty());
   /// ```
-  #[inline]
   pub fn program_name(&self) -> &str {
     &self.program_name
   }
