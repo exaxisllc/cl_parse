@@ -10,17 +10,16 @@ const LONG_HELP: &'static str = "--help";
 const TRUE: &'static str = "true";
 const FALSE: &'static str = "false";
 
-#[inline]
 fn format_usage(msg: &str, usage: &str) -> String {
     format!("{}\n{}", msg, usage)
 }
 
-#[inline]
 fn panic_msg(msg: String) {
     panic!("{}",msg)
 }
 
 /// Defines the valid commandline options and arguments for this program
+#[derive(Default)]
 pub struct CommandLineDef {
   /// The list of option_defs added
   option_defs: Vec<OptionDef>,
@@ -32,7 +31,6 @@ pub struct CommandLineDef {
 
 impl CommandLineDef {
   /// Creates a new CommandLineDef
-  #[inline]
   pub fn new() -> Self {
     let mut cl_def = CommandLineDef {
       option_defs:Vec::default(),
@@ -89,7 +87,6 @@ impl CommandLineDef {
   /// let boolean:bool = cl.option("--bool");
   /// assert_eq!(boolean, false);
   /// ```
-  #[inline]
   pub fn add_flag(&mut self, aliases:Vec<&'static str>, description:&'static str) -> &mut Self {
     self.add_option(aliases, None, None, description)
   }
@@ -141,7 +138,6 @@ impl CommandLineDef {
   /// let pos:i16 = cl.option("--positive");
   /// assert_eq!(pos, p);
   /// ```
-  #[inline]
   pub fn add_option(&mut self, aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str) -> &mut Self {
     self.add_option_with_values(aliases, value_name, default_value, description, Vec::new())
   }
@@ -184,7 +180,6 @@ impl CommandLineDef {
   /// assert_eq!(level, "low");
   ///
   /// ```
-  #[inline]
   pub fn add_option_with_values(&mut self, mut aliases:Vec<&'static str>, value_name:Option<&'static str>, default_value:Option<&'static str>, description:&'static str, valid_values: Vec<&'static str>) -> &mut Self {
     let default = if value_name.is_some() { default_value } else { Some(FALSE) };
     aliases.sort_by(|a,b| a.trim_start_matches(SHORT_OPTION).cmp(b.trim_start_matches(SHORT_OPTION)));
@@ -242,7 +237,6 @@ impl CommandLineDef {
   /// let arg2:String = cl.argument(2);
   /// assert_eq!(arg2, "arg3");
   /// ```
-  #[inline]
   pub fn add_argument(&mut self, argument_name:&'static str) -> &mut Self {
     self.argument_names.push(argument_name);
     self
@@ -309,7 +303,6 @@ impl CommandLineDef {
     CommandLine::new(program_name, options, arguments)
   }
 
-  #[inline]
   fn usage(&self, program_name:&str) -> String {
     let mut flags: Vec<char> = Vec::default();
     let mut options: Vec<String> = Vec::default();
@@ -374,13 +367,11 @@ impl CommandLineDef {
     usage
   }
 
-  #[inline]
   fn find_option_def(&self, option:&str) -> Option<&OptionDef> {
     let od_idx = self.option_def_map.get(option)?;
     Some(&self.option_defs[*od_idx])
   }
 
-  #[inline]
   fn validate_options(&self, options: &mut HashMap<String, String>, usage: &str, ){
     for option in self.option_def_map.keys() {
       if !options.contains_key(*option) {
@@ -397,7 +388,6 @@ impl CommandLineDef {
     }
   }
 
-  #[inline]
   fn parse_option(&self, option: String, value: Option<&String>, usage: &str, options: &mut HashMap<String, String>) -> bool {
     let mut skip = false;
 
@@ -472,7 +462,6 @@ impl OptionDef {
     /// * Panics if the alias starts with '--' and the length is less than 4
     /// * Panics if the alias starts with '-' and the length is not equal to 2
     ///
-    #[inline]
     pub(crate) fn new(aliases:Vec<&'static str>, value_name:Option<&'static str>,
                       default_value:Option<&'static str>, description:&'static str,
                       valid_values: Vec<&'static str>) -> Self {
@@ -486,7 +475,6 @@ impl OptionDef {
         }
     }
 
-    #[inline]
     fn validate_aliases(aliases:&Vec<&'static str>) {
         for alias in aliases {
             let option_len = alias.trim_start_matches(SHORT_OPTION).len();
