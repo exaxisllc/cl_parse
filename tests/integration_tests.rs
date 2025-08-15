@@ -169,13 +169,18 @@ fn should_capture_interleaved_args() {
 }
 
 #[rstest]
-#[case::panic("---------", "A bad long option")]
-#[case::panic("---long", "A bad long option")]
-#[case::panic("--l", "A bad long option")]
+#[should_panic(expected = "Invalid option name '---------'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+#[case("---------", "A bad long option")]
+#[should_panic(expected = "Invalid option name '---long'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+#[case("---long", "A bad long option")]
+#[should_panic(expected = "Invalid option name '--l'. Long option names must start with '--' and be greater than 1 character. e.g. --lo")]
+#[case("--l", "A bad long option")]
+#[should_panic(expected = "Invalid option name '-'. Short option names must start with '-' and be 1 character. e.g. -f")]
 #[case("-", "A bad short option")]
+#[should_panic(expected = "Invalid option name '-short'. Short option names must start with '-' and be 1 character. e.g. -f")]
 #[case("-short", "A bad short option")]
-#[case("opt", "A bad option")]
-#[should_panic(expected = "Invalid option name")]
+#[should_panic(expected = "Invalid option name 'opt'. Options must start with '-' or '--'")]
+#[case::panic("opt", "A bad option")]
 fn should_panic_for_bad_option_name(#[case] bad_flag : &'static str, #[case] description : &'static str) {
     let env_args = vec![String::from("test"), String::from("--long")];
     let cl = CommandLineDef::new()
