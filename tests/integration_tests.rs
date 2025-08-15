@@ -1,6 +1,7 @@
+use rstest::rstest;
 use cl_parse::CommandLineDef;
 
-#[test]
+#[rstest]
 fn should_return_default_boolean_false() {
     let env_args = vec![String::from("test")];
     let cl = CommandLineDef::new()
@@ -28,7 +29,7 @@ fn should_return_default_boolean_false() {
     assert_eq!(f, false);
 }
 
-#[test]
+#[rstest]
 fn should_return_concat_flags() {
     let env_args = vec![String::from("test"), String::from("-dcb")];
     let cl = CommandLineDef::new()
@@ -51,7 +52,7 @@ fn should_return_concat_flags() {
     assert_eq!(f, false);
 }
 
-#[test]
+#[rstest]
 fn should_return_boolean() {
     let env_args = vec![String::from("test"), String::from("-c")];
     let cl = CommandLineDef::new()
@@ -66,7 +67,7 @@ fn should_return_boolean() {
     assert_eq!(c, true);
 }
 
-#[test]
+#[rstest]
 fn should_return_i16() {
     let env_args = vec![
         "test".to_string(),
@@ -89,7 +90,7 @@ fn should_return_i16() {
     assert_eq!(pos, 1);
 }
 
-#[test]
+#[rstest]
 fn aliases_should_have_value() {
     let env_args = vec![
         "test".to_string(),
@@ -128,7 +129,7 @@ fn aliases_should_have_value() {
     assert_eq!(pos, p);
 }
 
-#[test]
+#[rstest]
 fn should_capture_interleaved_args() {
     let env_args = vec![
         "test".to_string(),
@@ -167,88 +168,25 @@ fn should_capture_interleaved_args() {
     assert_eq!(arg2, "arg3");
 }
 
-#[test]
-#[should_panic(
-    expected = "Invalid option name '---------'. Long option names must start with '--' and be greater than 1 character. e.g. --lo"
-)]
-fn should_panic_for_bad_long_option() {
+#[rstest]
+#[case::panic("---------", "A bad long option")]
+#[case::panic("---long", "A bad long option")]
+#[case::panic("--l", "A bad long option")]
+#[case("-", "A bad short option")]
+#[case("-short", "A bad short option")]
+#[case("opt", "A bad option")]
+#[should_panic(expected = "Invalid option name")]
+fn should_panic_for_bad_option_name(#[case] bad_flag : &'static str, #[case] description : &'static str) {
     let env_args = vec![String::from("test"), String::from("--long")];
     let cl = CommandLineDef::new()
-        .add_flag(vec!["---------"], "A bad long option")
-        .parse(env_args.into_iter());
-
-    let long: bool = cl.option("--long");
-    assert_eq!(long, true);
-}
-#[test]
-#[should_panic(
-    expected = "Invalid option name '---long'. Long option names must start with '--' and be greater than 1 character. e.g. --lo"
-)]
-fn should_panic_for_bad_long_option_1() {
-    let env_args = vec![String::from("test"), String::from("--long")];
-    let cl = CommandLineDef::new()
-        .add_flag(vec!["---long"], "A bad long option")
+        .add_flag(vec![bad_flag], description)
         .parse(env_args.into_iter());
 
     let long: bool = cl.option("--long");
     assert_eq!(long, true);
 }
 
-#[test]
-#[should_panic(
-    expected = "Invalid option name '--l'. Long option names must start with '--' and be greater than 1 character. e.g. --lo"
-)]
-fn should_panic_for_bad_long_option_2() {
-    let env_args = vec![String::from("test"), String::from("--long")];
-    let cl = CommandLineDef::new()
-        .add_flag(vec!["--l"], "A bad long option")
-        .parse(env_args.into_iter());
-
-    let long: bool = cl.option("--long");
-    assert_eq!(long, true);
-}
-
-#[test]
-#[should_panic(
-    expected = "Invalid option name '-'. Short option names must start with '-' and be 1 character. e.g. -f"
-)]
-fn should_panic_for_bad_short_option() {
-    let env_args = vec![String::from("test"), String::from("-s")];
-    let cl = CommandLineDef::new()
-        .add_flag(vec!["-"], "A bad short option")
-        .parse(env_args.into_iter());
-
-    let long: bool = cl.option("-s");
-    assert_eq!(long, true);
-}
-
-#[test]
-#[should_panic(
-    expected = "Invalid option name '-short'. Short option names must start with '-' and be 1 character. e.g. -f"
-)]
-fn should_panic_for_bad_short_option_1() {
-    let env_args = vec![String::from("test"), String::from("-s")];
-    let cl = CommandLineDef::new()
-        .add_flag(vec!["-short"], "A bad short option")
-        .parse(env_args.into_iter());
-
-    let long: bool = cl.option("-s");
-    assert_eq!(long, true);
-}
-
-#[test]
-#[should_panic(expected = "Invalid option name 'opt'. Options must start with '-' or '--'")]
-fn should_panic_for_bad_option() {
-    let env_args = vec![String::from("test"), String::from("opt")];
-    let cl = CommandLineDef::new()
-        .add_flag(vec!["opt"], "A bad option")
-        .parse(env_args.into_iter());
-
-    let long: bool = cl.option("opt");
-    assert_eq!(long, true);
-}
-
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Option '--increment' is required\nUsage: test [-ch] --increment <numeric value>"
 )]
@@ -268,7 +206,7 @@ fn should_panic_for_missing_required_option() {
     assert_eq!(inc, -1);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Flag '-c' not defined\nUsage: test [-h]")]
 fn should_panic_for_flag_undefined() {
     let env_args = vec![String::from("test"), String::from("-c")];
@@ -278,7 +216,7 @@ fn should_panic_for_flag_undefined() {
     assert_eq!(c, true);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Option '--num' cannot be redefined")]
 fn should_panic_for_option_redefined() {
     let env_args = vec![String::from("test"), String::from("-n"), String::from("10")];
@@ -296,7 +234,7 @@ fn should_panic_for_option_redefined() {
     assert_eq!(n, 10);
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "A value is required for option '--increment'\nUsage: test [-h] --increment <numeric value>"
 )]
@@ -315,7 +253,7 @@ fn should_panic_for_missing_value() {
     assert_eq!(inc, -1);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Defined 1 arguments, found 2 arguments\nUsage: test [-h] <arg-1>")]
 fn should_panic_for_too_many_args() {
     let env_args = vec![
@@ -331,7 +269,7 @@ fn should_panic_for_too_many_args() {
     assert_eq!(arg1, "arg-1");
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Defined 3 arguments, found 2 arguments\nUsage: test [-h] <arg-1> <arg-2> <arg-3>"
 )]
@@ -351,7 +289,7 @@ fn should_panic_for_too_few_args() {
     assert_eq!(arg1, "arg-1");
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Multiple '-m' options or aliases on commandline\nUsage: test [-hm]")]
 fn should_panic_for_repeated_flags() {
     let env_args = vec![String::from("test"), String::from("-m"), String::from("-m")];
@@ -363,7 +301,7 @@ fn should_panic_for_repeated_flags() {
     assert_eq!(m, true);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Multiple '-b' options or aliases on commandline\nUsage: test [-bhm]")]
 fn should_panic_for_repeated_concat_flags() {
     let env_args = vec![String::from("test"), String::from("-bmb")];
@@ -376,7 +314,7 @@ fn should_panic_for_repeated_concat_flags() {
     assert_eq!(b, true);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Option '-b' is not a flag\nUsage: test [-hm] [-b <batch size>]")]
 fn should_panic_for_not_a_concat_flag() {
     let env_args = vec![String::from("test"), String::from("-mb")];
@@ -394,7 +332,7 @@ fn should_panic_for_not_a_concat_flag() {
     assert_eq!(m, true);
 }
 
-#[test]
+#[rstest]
 #[should_panic(expected = "Flag '-u' not defined\nUsage: test [-bhm]")]
 fn should_panic_for_undefined_concat_flags() {
     let env_args = vec![String::from("test"), String::from("-mbu")];
@@ -407,7 +345,7 @@ fn should_panic_for_undefined_concat_flags() {
     assert_eq!(m, true);
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Multiple '-f' options or aliases on commandline\nUsage: test [-h] -f <path>"
 )]
@@ -427,7 +365,7 @@ fn should_panic_for_redefined_alias() {
     assert_eq!(f, "path");
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Usage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
 )]
@@ -456,7 +394,7 @@ fn should_display_h_help() {
         .parse(env_args.into_iter());
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Flag '-e' not defined\nUsage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
 )]
@@ -485,7 +423,7 @@ fn should_display_help_help() {
         .parse(env_args.into_iter());
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Flag '-e' not defined\nUsage: test [-h]\n-h, --help : Display usage message"
 )]
@@ -495,7 +433,7 @@ fn should_panic_undefined_flag() {
     CommandLineDef::new().parse(env_args.into_iter());
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Option '--level' must be one of [low,med,high]\nUsage: test [-h] [--level <level>]\n     -h, --help : Display usage message\n--level <level> : [low,med,high]. Operating Speed"
 )]
@@ -513,7 +451,7 @@ fn should_panic_invalid_default_value() {
         .parse(env_args.into_iter());
 }
 
-#[test]
+#[rstest]
 #[should_panic(
     expected = "Option '--level' must be one of [low,med,high]\nUsage: test [-h] --level <level>\n     -h, --help : Display usage message\n--level <level> : [low,med,high]. Operating Speed"
 )]
@@ -535,7 +473,7 @@ fn should_panic_invalid_value() {
         .parse(env_args.into_iter());
 }
 
-#[test]
+#[rstest]
 fn should_accept_valid_default_value() {
     let env_args = vec![String::from("test")];
 
@@ -553,7 +491,7 @@ fn should_accept_valid_default_value() {
     assert_eq!(level, "med");
 }
 
-#[test]
+#[rstest]
 fn should_accept_valid_value() {
     let env_args = vec![
         String::from("test"),
