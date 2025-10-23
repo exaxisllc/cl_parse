@@ -312,7 +312,14 @@ impl CommandLineDef {
                 skip_next = if arg.starts_with(SHORT_OPTION) {
                     self.parse_option(arg, peekable_args.peek(), &usage, &mut options)
                 } else {
-                    arguments.push(arg);
+                    if arg.starts_with("'") {
+                        arguments.push(arg.trim_matches('\'').to_string());
+                    } else if arg.starts_with("\"")
+                    {
+                        arguments.push(arg.trim_matches('"').to_string());
+                    } else {
+                        arguments.push(arg);
+                    }
                     false
                 }
             } else {

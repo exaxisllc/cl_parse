@@ -68,7 +68,7 @@ fn should_return_boolean() {
 }
 
 #[rstest]
-fn should_return_i16() {
+fn should_return_i16_option() {
     let env_args = vec![
         "test".to_string(),
         "--negative".to_string(),
@@ -88,6 +88,73 @@ fn should_return_i16() {
 
     let pos: i16 = cl.option("--positive");
     assert_eq!(pos, 1);
+}
+
+#[rstest]
+#[should_panic(expected = "Cannot convert option '--negative' from '-1a' to type 'i16'")]
+fn should_panic_for_bad_i16_option() {
+    let env_args = vec![
+        "test".to_string(),
+        "--negative".to_string(),
+        "-1a".to_string(),
+        "--positive".to_string(),
+        "1b".to_string(),
+    ];
+    let cl = CommandLineDef::new()
+        .add_option(vec!["--negative"], Some("neg"), None, "A negative value")
+        .add_option(vec!["--positive"], Some("pos"), None, "A positive value")
+        .parse(env_args.into_iter());
+
+    assert_eq!(cl.program_name(), "test");
+
+    let neg: i16 = cl.option("--negative");
+    assert_eq!(neg, -1);
+
+    let pos: i16 = cl.option("--positive");
+    assert_eq!(pos, 1);
+}
+
+#[rstest]
+fn should_return_i16_argument() {
+    let env_args = vec![
+        "test".to_string(),
+        "'-1'".to_string(),
+        "\"-5\"".to_string(),
+    ];
+    let cl = CommandLineDef::new()
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .parse(env_args.into_iter());
+
+    assert_eq!(cl.program_name(), "test");
+
+    let arg1: i16 = cl.argument("arg1_name");
+    assert_eq!(arg1, -1);
+
+    let arg2: i16 = cl.argument("arg2_name");
+    assert_eq!(arg2, -5);
+}
+
+#[rstest]
+#[should_panic(expected = "Cannot convert argument 'arg1_name' from '1a' to type 'i16'")]
+fn should_panic_for_bad_i16_argument() {
+    let env_args = vec![
+        "test".to_string(),
+        "1a".to_string(),
+        "10".to_string(),
+    ];
+    let cl = CommandLineDef::new()
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .parse(env_args.into_iter());
+
+    assert_eq!(cl.program_name(), "test");
+
+    let arg1: i16 = cl.argument("arg1_name");
+    assert_eq!(arg1, 1);
+
+    let arg2: i16 = cl.argument("arg2_name");
+    assert_eq!(arg2, 10);
 }
 
 #[rstest]

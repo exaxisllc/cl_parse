@@ -65,12 +65,12 @@ impl Text for EnUs {
         format!("Argument name '{name}' is not defined")
     }
 
-    fn option_cannot_convert(&self, option: &str, value: &str) -> String {
-        format!("Cannot convert option '{option}' from '{value}'")
+    fn option_cannot_convert(&self, option: &str, value: &str, type_name: &str) -> String {
+        format!("Cannot convert option '{option}' from '{value}' to type '{type_name}'")
     }
 
-    fn argument_cannot_convert(&self, name: &str, value: &str) -> String {
-        format!("Cannot convert argument '{name}' from '{value}'")
+    fn argument_cannot_convert(&self, name: &str, value: &str, type_name: &str) -> String {
+        format!("Cannot convert argument '{name}' from '{value}' to type '{type_name}'")
     }
 
     fn usage(&self, program_name: &str) -> String {

@@ -98,7 +98,7 @@ impl CommandLine {
             .unwrap_or_else(|| panic!("{}", &T.option_not_found(name)));
         match T::from_str(option) {
             Ok(t) => t,
-            Err(_) => panic!("{}", T.option_cannot_convert(name, option)),
+            Err(_) => panic!("{}", T.option_cannot_convert(name, option, std::any::type_name::<T>())),
         }
     }
 
@@ -151,7 +151,7 @@ impl CommandLine {
             .unwrap_or_else(|| panic!("{}", &T.argument_invalid_name(name)));
         match T::from_str(argument) {
             Ok(t) => t,
-            Err(_) => panic!("{}", T.argument_cannot_convert(name, argument)),
+            Err(_) => panic!("{}", T.argument_cannot_convert(name, argument, std::any::type_name::<T>())),
         }
     }
 

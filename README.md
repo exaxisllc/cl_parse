@@ -23,6 +23,7 @@ implemented in cl_parse.
  - option value validation. e.g. --level vec!["low","med","high"]
  - unordered options and arguments
  - retrieving the option or argument in the target type. e.g. i32, String, etc.
+ - arguments that start with - or -- can be enclosed in single or double quotes. e.g. '-1' or "-5"
 
 # Example
 
