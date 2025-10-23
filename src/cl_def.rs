@@ -417,13 +417,12 @@ impl CommandLineDef {
 
     fn validate_options(&self, options: &mut HashMap<String, String>, usage: &str) {
         for option in self.option_def_map.keys() {
-            if !options.contains_key(*option) {
-                if let Some(od) = self.find_option_def(option) {
+            if !options.contains_key(*option)
+                && let Some(od) = self.find_option_def(option) {
                     let default = od.default_value.unwrap_or_else(|| {
                         panic!("{}", format_usage(&T.option_required(option), usage))
                     });
                     options.insert(option.to_string(), default.to_string());
-                }
             }
             let od = self.find_option_def(option).unwrap();
             let value = options.get(*option).unwrap().as_str();

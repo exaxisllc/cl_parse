@@ -35,7 +35,7 @@ let cl = CommandLineDef::new()
 .add_flag(vec!["-f","--faux"], "Another boolean value")
 .add_option(vec!["-n","--num"], Some("num"), None, "A required numeric value")
 .add_option_with_values(vec!["--level"], Some("level"), Some("med"), "Operating Speed", vec!["low", "med", "high"])
-.add_argument("arg1_name")
+.add_argument("arg1_name") // define the argument names
 .add_argument("arg2_name")
 .add_argument("arg3_name")
 .parse(env::args());
@@ -67,7 +67,7 @@ assert_eq!(level, "low");
 
 assert_eq!(cl.arguments(), 3);
 
-let arg1:String = cl.argument("arg1_name");
+let arg1:String = cl.argument("arg1_name"); // retrieve the argument value by the argument name
 assert_eq!(arg1, "arg1_value");
 
 let arg2:String = cl.argument("arg2_name");
