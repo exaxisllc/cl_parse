@@ -231,18 +231,18 @@ impl CommandLineDef {
     /// use cl_parse::CommandLineDef;
     /// let args=vec![
     ///   "program".to_string(),
-    ///   "arg1".to_string(),
+    ///   "arg1_value".to_string(),
     ///   "--bool".to_string(),
-    ///   "arg2".to_string(),
+    ///   "arg2_value".to_string(),
     ///   "-n".to_string(), "-1".to_string(),
-    ///   "arg3".to_string(),
+    ///   "arg3_value".to_string(),
     /// ];
     /// let cl = CommandLineDef::new()
     /// .add_option(vec!["-b","--bool"], None, Some("false"), "A boolean value")
     /// .add_option(vec!["-n","--num"], Some("num"), None, "A numeric value")
-    /// .add_argument("arg-0")
-    /// .add_argument("arg-1")
-    /// .add_argument("arg-2")
+    /// .add_argument("arg1_name")
+    /// .add_argument("arg2_name")
+    /// .add_argument("arg3_name")
     /// .parse(args.into_iter());
     /// assert_eq!(cl.program_name(), "program");
     ///
@@ -254,14 +254,14 @@ impl CommandLineDef {
     ///
     /// assert_eq!(cl.arguments(), 3);
     ///
-    /// let arg0:String = cl.argument(0);
-    /// assert_eq!(arg0, "arg1");
+    /// let arg1:String = cl.argument("arg1_name");
+    /// assert_eq!(arg1, "arg1_value");
     ///
-    /// let arg1:String = cl.argument(1);
-    /// assert_eq!(arg1, "arg2");
+    /// let arg2:String = cl.argument("arg2_name");
+    /// assert_eq!(arg2, "arg2_value");
     ///
-    /// let arg2:String = cl.argument(2);
-    /// assert_eq!(arg2, "arg3");
+    /// let arg3:String = cl.argument("arg3_name");
+    /// assert_eq!(arg3, "arg3_value");
     /// ```
     pub fn add_argument(&mut self, argument_name: &'static str) -> &mut Self {
         self.argument_names.push(argument_name);
@@ -319,6 +319,7 @@ impl CommandLineDef {
                 skip_next = false;
             }
         }
+
         // make sure we got the defined number of arguments
         if arguments.len() != self.argument_names.len() {
             panic_msg(format_usage(
@@ -326,8 +327,13 @@ impl CommandLineDef {
                 &usage,
             ));
         }
+        let mut argument_map = HashMap::default();
+        for (k,v) in std::iter::zip(&self.argument_names, arguments) {
+            argument_map.insert(k.to_string(), v);
+        }
+
         self.validate_options(&mut options, &usage);
-        CommandLine::new(program_name, options, arguments)
+        CommandLine::new(program_name, options, argument_map)
     }
 
     fn usage(&self, program_name: &str) -> String {

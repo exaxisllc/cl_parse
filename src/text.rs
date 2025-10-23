@@ -41,9 +41,9 @@ pub(crate) trait Text {
     fn option_not_found(&self, option: &str) -> String;
     fn option_value_invalid(&self, option: &str, valid_values: &[&'static str]) -> String;
 
-    fn argument_invalid_index(&self, index: usize) -> String;
+    fn argument_invalid_name(&self, name: &str) -> String;
     fn option_cannot_convert(&self, option: &str, value: &str) -> String;
-    fn argument_cannot_convert(&self, index: usize, value: &str) -> String;
+    fn argument_cannot_convert(&self, name: &str, value: &str) -> String;
     fn usage(&self, program_name: &str) -> String;
 }
 

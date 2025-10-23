@@ -9,7 +9,7 @@ pub struct CommandLine {
     /// The options and values parsed from the command line
     options: HashMap<String, String>,
     /// The remaining non-option arguments
-    arguments: Vec<String>,
+    argument_map: HashMap<String, String>,
 }
 
 impl CommandLine {
@@ -36,12 +36,12 @@ impl CommandLine {
     pub(crate) fn new(
         program_name: String,
         options: HashMap<String, String>,
-        arguments: Vec<String>,
+        argument_map: HashMap<String, String>,
     ) -> Self {
         CommandLine {
             program_name,
             options,
-            arguments,
+            argument_map,
         }
     }
 
@@ -119,7 +119,7 @@ impl CommandLine {
     ///   assert_eq!(cl.arguments(), 0);
     /// ```
     pub fn arguments(&self) -> usize {
-        self.arguments.len()
+        self.argument_map.len()
     }
 
     /// Returns the argument based by index
@@ -131,27 +131,27 @@ impl CommandLine {
     ///  use std::env;
     ///  use cl_parse::{CommandLine, CommandLineDef};
     ///  // Simulate env::args()
-    ///  let env_args=vec![String::from("program"), String::from("-f"), String::from("/file/path"), String::from("arg1")];
+    ///  let env_args=vec![String::from("program"), String::from("-f"), String::from("/file/path"), String::from("arg1_value")];
     ///  let cl = CommandLineDef::new()
     ///   .add_option(vec!["-f","--filename"], Some("filepath"), None, "The file to be parsed")
-    ///   .add_argument("arg-0")
+    ///   .add_argument("arg1_name")
     ///   .parse(env_args.into_iter());
     ///
-    ///  let arg0:String = cl.argument(0);
-    ///  assert_eq!(arg0, "arg1");
+    ///  let arg1:String = cl.argument("arg1_name");
+    ///  assert_eq!(arg1, "arg1_value");
     ///
     /// ```
-    pub fn argument<T>(&self, index: usize) -> T
+    pub fn argument<T>(&self, name : &str) -> T
     where
         T: FromStr,
     {
         let argument = self
-            .arguments
-            .get(index)
-            .unwrap_or_else(|| panic!("{}", &T.argument_invalid_index(index)));
+            .argument_map
+            .get(name)
+            .unwrap_or_else(|| panic!("{}", &T.argument_invalid_name(name)));
         match T::from_str(argument) {
             Ok(t) => t,
-            Err(_) => panic!("{}", T.argument_cannot_convert(index, argument)),
+            Err(_) => panic!("{}", T.argument_cannot_convert(name, argument)),
         }
     }
 

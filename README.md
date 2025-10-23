@@ -35,13 +35,13 @@ let cl = CommandLineDef::new()
 .add_flag(vec!["-f","--faux"], "Another boolean value")
 .add_option(vec!["-n","--num"], Some("num"), None, "A required numeric value")
 .add_option_with_values(vec!["--level"], Some("level"), Some("med"), "Operating Speed", vec!["low", "med", "high"])
-.add_argument("arg-0")
-.add_argument("arg-1")
-.add_argument("arg-2")
+.add_argument("arg1_name")
+.add_argument("arg2_name")
+.add_argument("arg3_name")
 .parse(env::args());
 
 // The asserts assume the following commandline
-// program arg1 --boolean arg2 -n -1 arg3 --level low
+// program arg1_value --boolean arg2_value -n -1 arg3_value --level low
 assert_eq!(cl.program_name(), "program");
 
 // aliases are updated
@@ -67,12 +67,12 @@ assert_eq!(level, "low");
 
 assert_eq!(cl.arguments(), 3);
 
-let arg0:String = cl.argument(0);
-assert_eq!(arg0, "arg1");
+let arg1:String = cl.argument("arg1_name");
+assert_eq!(arg1, "arg1_value");
 
-let arg1:String = cl.argument(1);
-assert_eq!(arg1, "arg2");
+let arg2:String = cl.argument("arg2_name");
+assert_eq!(arg2, "arg2_value");
 
-let arg2:String = cl.argument(2);
-assert_eq!(arg2, "arg3");
+let arg3:String = cl.argument("arg3_name");
+assert_eq!(arg3, "arg3_value");
 ```

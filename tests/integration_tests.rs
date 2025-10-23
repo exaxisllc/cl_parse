@@ -133,19 +133,19 @@ fn aliases_should_have_value() {
 fn should_capture_interleaved_args() {
     let env_args = vec![
         "test".to_string(),
-        "arg1".to_string(),
+        "arg1_value".to_string(),
         "-n".to_string(),
         "-1".to_string(),
-        "arg2".to_string(),
+        "arg2_value".to_string(),
         "--bool".to_string(),
-        "arg3".to_string(),
+        "arg3_value".to_string(),
     ];
     let cl = CommandLineDef::new()
         .add_option(vec!["-b", "--bool"], None, None, "A boolean value")
         .add_option(vec!["-n", "--num"], Some("num"), None, "A numeric value")
-        .add_argument("arg-0")
-        .add_argument("arg-1")
-        .add_argument("arg-2")
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .add_argument("arg3_name")
         .parse(env_args.into_iter());
 
     assert_eq!(cl.program_name(), "test");
@@ -158,14 +158,14 @@ fn should_capture_interleaved_args() {
 
     assert_eq!(cl.arguments(), 3);
 
-    let arg0: String = cl.argument(0);
-    assert_eq!(arg0, "arg1");
+    let arg1: String = cl.argument("arg1_name");
+    assert_eq!(arg1, "arg1_value");
 
-    let arg1: String = cl.argument(1);
-    assert_eq!(arg1, "arg2");
+    let arg2: String = cl.argument("arg2_name");
+    assert_eq!(arg2, "arg2_value");
 
-    let arg2: String = cl.argument(2);
-    assert_eq!(arg2, "arg3");
+    let arg3: String = cl.argument("arg3_name");
+    assert_eq!(arg3, "arg3_value");
 }
 
 #[rstest]
@@ -259,39 +259,39 @@ fn should_panic_for_missing_value() {
 }
 
 #[rstest]
-#[should_panic(expected = "Defined 1 arguments, found 2 arguments\nUsage: test [-h] <arg-1>")]
+#[should_panic(expected = "Defined 1 argument(s), found 2 argument(s)\nUsage: test [-h] <arg1_name>")]
 fn should_panic_for_too_many_args() {
     let env_args = vec![
         String::from("test"),
-        String::from("arg1"),
-        String::from("arg2"),
+        String::from("arg1_value"),
+        String::from("arg2_value"),
     ];
     let cl = CommandLineDef::new()
-        .add_argument("arg-1")
+        .add_argument("arg1_name")
         .parse(env_args.into_iter());
 
-    let arg1: String = cl.argument(0);
-    assert_eq!(arg1, "arg-1");
+    let arg1: String = cl.argument("arg1_name");
+    assert_eq!(arg1, "arg1_value");
 }
 
 #[rstest]
 #[should_panic(
-    expected = "Defined 3 arguments, found 2 arguments\nUsage: test [-h] <arg-1> <arg-2> <arg-3>"
+    expected = "Defined 3 argument(s), found 2 argument(s)\nUsage: test [-h] <arg1_name> <arg2_name> <arg3_name>"
 )]
 fn should_panic_for_too_few_args() {
     let env_args = vec![
         String::from("test"),
-        String::from("arg1"),
-        String::from("arg2"),
+        String::from("arg1_value"),
+        String::from("arg2_value"),
     ];
     let cl = CommandLineDef::new()
-        .add_argument("arg-1")
-        .add_argument("arg-2")
-        .add_argument("arg-3")
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .add_argument("arg3_name")
         .parse(env_args.into_iter());
 
-    let arg1: String = cl.argument(0);
-    assert_eq!(arg1, "arg-1");
+    let arg1: String = cl.argument("arg1_name");
+    assert_eq!(arg1, "arg1_value");
 }
 
 #[rstest]
@@ -372,7 +372,7 @@ fn should_panic_for_redefined_alias() {
 
 #[rstest]
 #[should_panic(
-    expected = "Usage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
+    expected = "Usage: test [-bfh] -n <num> <arg1_name> <arg2_name> <arg3_name>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
 )]
 fn should_display_h_help() {
     let env_args = vec![
@@ -393,15 +393,15 @@ fn should_display_h_help() {
             None,
             "A required numeric value",
         )
-        .add_argument("arg-0")
-        .add_argument("arg-1")
-        .add_argument("arg-2")
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .add_argument("arg3_name")
         .parse(env_args.into_iter());
 }
 
 #[rstest]
 #[should_panic(
-    expected = "Flag '-e' not defined\nUsage: test [-bfh] -n <num> <arg-0> <arg-1> <arg-2>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
+    expected = "Flag '-e' not defined\nUsage: test [-bfh] -n <num> <arg1_name> <arg2_name> <arg3_name>\n     -h, --help : Display usage message\n  -b, --boolean : A boolean value\n     -f, --faux : Another boolean value\n-n, --num <num> : A required numeric value"
 )]
 fn should_display_help_help() {
     let env_args = vec![
@@ -422,9 +422,9 @@ fn should_display_help_help() {
             None,
             "A required numeric value",
         )
-        .add_argument("arg-0")
-        .add_argument("arg-1")
-        .add_argument("arg-2")
+        .add_argument("arg1_name")
+        .add_argument("arg2_name")
+        .add_argument("arg3_name")
         .parse(env_args.into_iter());
 }
 

@@ -9,7 +9,7 @@ impl Text for EnUs {
     }
 
     fn argument_defined_ne_found(&self, defined: usize, found: usize) -> String {
-        format!("Defined {defined} arguments, found {found} arguments")
+        format!("Defined {defined} argument(s), found {found} argument(s)")
     }
 
     fn option_value_required(&self, option: &str) -> String {
@@ -61,16 +61,16 @@ impl Text for EnUs {
         format!("Option '{option}' must be one of [{vv}]")
     }
 
-    fn argument_invalid_index(&self, index: usize) -> String {
-        format!("Argument index '{index}' is out of bounds")
+    fn argument_invalid_name(&self, name: &str) -> String {
+        format!("Argument name '{name}' is not defined")
     }
 
     fn option_cannot_convert(&self, option: &str, value: &str) -> String {
         format!("Cannot convert option '{option}' from '{value}'")
     }
 
-    fn argument_cannot_convert(&self, index: usize, value: &str) -> String {
-        format!("Cannot convert argument '{index}' from '{value}'")
+    fn argument_cannot_convert(&self, name: &str, value: &str) -> String {
+        format!("Cannot convert argument '{name}' from '{value}'")
     }
 
     fn usage(&self, program_name: &str) -> String {
