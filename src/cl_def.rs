@@ -25,7 +25,7 @@ pub struct CommandLineDef {
     option_defs: Vec<OptionDef>,
     /// Maps the individual aliases of the OptionDef to the OptionDef.
     option_def_map: HashMap<&'static str, usize>,
-    /// Descriptive names for each of the arguments. e.g. file_path
+    /// Descriptive names for each of the arguments, e.g., `file_path`
     argument_names: Vec<&'static str>,
 }
 
@@ -45,14 +45,14 @@ impl CommandLineDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option. e.g. `"-n","--negative"`
-    /// * `description` - The description of this option. e.g. `A negative number`.
+    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
+    /// * `description` - The description of this option, e.g., `A negative number`
     ///
     /// # Panics
     ///
-    /// * Panics if the alias does not start with '-' or '--'.
-    /// * Panics if the alias starts with '--' and the length is less than 4
-    /// * Panics if the alias starts with '-' and the length is not equal to 2
+    /// * Panics if the alias does not start with `-` or `--`.
+    /// * Panics if the alias starts with `-- and the length is less than 4.
+    /// * Panics if the alias starts with `-` and the length is not equal to 2.
     ///
     /// # Examples
     ///
@@ -95,20 +95,20 @@ impl CommandLineDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option. e.g. `"-n","--negative"`
+    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
     /// * `value_name` - The `Option<&'static str>` name for the value associated with the option.
-    ///   If set to `None`, this option will be treated as a flag, and its value will default to "false".
+    ///   If set to `None`, this option will be treated as a flag, and its value will default to `false`.
     /// * `default_value` - An `Option<T>` containing the value to use if one is not supplied. If `None`,
     ///   then this option will be considered required and will panic if this option is not specified on
-    ///   the commandline. If `value_name`==`None`, `default_value` will be ignored.
-    /// * `description` - The description of this option. e.g. `A negative number`.
+    ///   the commandline. If `value_name` == `None`, `default_value` will be ignored.
+    /// * `description` - The description of this option, e.g., `A negative number`
     ///
     /// # Panics
     ///
-    /// * Panics if the alias does not start with '-' or '--'.
-    /// * Panics if the alias starts with '--' and the length is less than 4
-    /// * Panics if the alias starts with '-' and the length is not equal to 2
-    /// * Panics if an alias is defined more than once
+    /// * Panics if the alias does not start with `-` or `--`.
+    /// * Panics if the alias starts with `--` and the length is less than 4.
+    /// * Panics if the alias starts with `-` and the length is not equal to 2.
+    /// * Panics if an alias is defined more than once.
     ///
     /// # Examples
     ///
@@ -148,25 +148,25 @@ impl CommandLineDef {
         self.add_option_with_values(aliases, value_name, default_value, description, Vec::new())
     }
 
-    /// Adds a new option definition to this commandline definition
+    /// Adds a new option definition to this commandline definition.
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option. e.g. `"-n","--negative"`
+    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
     /// * `value_name` - The `Option<&'static str>` name for the value associated with the option.
-    ///   If set to `None`, this option will be treated as a flag, and its value will default to "false".
+    ///   If set to `None`, this option will be treated as a flag, and its value will default to `false`.
     /// * `default_value` - An `Option<T>` containing the value to use if one is not supplied. If `None`,
     ///   then this option will be considered required and will panic if this option is not specified on
-    ///   the commandline. If `value_name`==`None`, `default_value` will be ignored.
-    /// * `description` - The description of this option. e.g. `A negative number`.
+    ///   the commandline. If `value_name` == `None`, `default_value` will be ignored.
+    /// * `description` - The description of this option, e.g., `A negative number`
     /// * `valid_values` - a vector of valid values to validate the option against
     ///
     /// # Panics
     ///
-    /// * Panics if the alias does not start with '-' or '--'.
-    /// * Panics if the alias starts with '--' and the length is less than 4
-    /// * Panics if the alias starts with '-' and the length is not equal to 2
-    /// * Panics if an alias is defined more than once
+    /// * Panics if the alias does not start with `-` or `--`.
+    /// * Panics if the alias starts with `--` and the length is less than 4.
+    /// * Panics if the alias starts with `-` and the length is not equal to 2.
+    /// * Panics if an alias is defined more than once.
     ///
     /// # Examples
     ///
@@ -219,7 +219,7 @@ impl CommandLineDef {
         self
     }
 
-    /// Add a new argument definition to the commandline definition
+    /// Add a new argument definition to the commandline definition.
     ///
     /// # Arguments
     ///
@@ -268,16 +268,16 @@ impl CommandLineDef {
         self
     }
 
-    /// Creates a new CommandLine from this CommandLineDef and the args
+    /// Creates a new CommandLine from this CommandLineDef and the args.
     ///
     /// # Arguments
     ///
     /// * `args` - A string iterator that holds the commandline arguments to be parsed
     ///
-    /// * Panics if an option is specified and its value is missing
-    /// * Panics if an undefined option is present on the commandline
-    /// * Panics if a required option is not present on the commandline
-    /// * Panics if number of arguments is incorrect
+    /// * Panics if an option is specified and its value is missing.
+    /// * Panics if an undefined option is present on the commandline. 
+    /// * Panics if a required option is not present on the commandline.
+    /// * Panics if number of arguments is incorrect.
     ///
     /// # Examples
     ///
@@ -490,15 +490,15 @@ impl CommandLineDef {
 
 /// Defines the valid options for this program
 struct OptionDef {
-    /// The aliases for this option. e.g. -f --filename
+    /// The aliases for this option, e.g., `-f --filename`
     aliases: Vec<&'static str>,
-    /// The name for the value associated with the option. e.g. -f path. If None,
-    /// this option will be treated as a flag and the default value will be false.
+    /// The name for the value associated with the option, e.g., `-f path`. If `None`,
+    /// this option will be treated as a flag and the default value will be `false`.
     value_name: Option<&'static str>,
     /// An Option containing the value to use if one is not supplied. If `None`,
     /// then this option will be considered required and will panic if the program tries to use it.
     default_value: Option<&'static str>,
-    /// The description of this option. e.g. The file to be read.
+    /// The description of this option, e.g., `The file to be read`.
     description: &'static str,
     /// Valid values accepted in this option
     valid_values: Vec<&'static str>,
@@ -509,19 +509,19 @@ impl OptionDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option. e.g. -f --filename
-    /// * `value_name` - The name for the value associated with the option. e.g. -f path. If None,
-    ///   this option will be treated as a flag and the default value will be false.
+    /// * `aliases` - The aliases for this option, e.g., `-f --filename`
+    /// * `value_name` - The name for the value associated with the option, e.g., `-f path`. If `None`,
+    ///   this option will be treated as a flag and the default value will be `false`.
     /// * `default_value` - An Option<T> containing the value to use if one is not supplied. If `None`,
     ///   then this option will be considered required and will panic if a value is not specified on the
-    ///   commandline. if `value_name` is None, `default_value` is ignored.
-    /// * `description` - The description of this option. e.g. The file to be read.
+    ///   commandline. If `value_name` == `None``, `default_value` is ignored.
+    /// * `description` - The description of this option, e.g., `The file to be read`
     ///
     /// # Panics
     ///
-    /// * Panics if the alias does not start with '-' or '--'.
-    /// * Panics if the alias starts with '--' and the length is less than 4
-    /// * Panics if the alias starts with '-' and the length is not equal to 2
+    /// * Panics if the alias does not start with `-` or `--`.
+    /// * Panics if the alias starts with `--` and the length is less than 4.
+    /// * Panics if the alias starts with `-` and the length is not equal to 2.
     ///
     pub(crate) fn new(
         aliases: Vec<&'static str>,
