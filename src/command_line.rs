@@ -18,8 +18,8 @@ impl CommandLine {
     /// # Arguments
     ///
     /// * `program_name` - The program name used on the commandline
-    /// * `option` - A hashmap of options specified on the commandline
-    /// * `args` - A vector of arguments specified on the commandline
+    /// * `options` - A hashmap of options and their values specified on the commandline
+    /// * `argument_map` - A HashMap of arguments and their values specified on the commandline
     ///
     /// # Examples
     ///
