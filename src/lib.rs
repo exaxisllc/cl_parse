@@ -9,7 +9,7 @@
 //! modern commandline utilities. It was also designed for ease of use. The following are the features
 //! implemented in `cl_parse`:
 //!
-//!  - option aliases, e.g., `-f`, `--file`
+//!  - option aliases, e.g., `vec!["-f", "--file"]`
 //!  - options with negative values, e.g., `--increment -1`
 //!  - flag concatenation, e.g., `-xvgf` instead of `-x -v -g -f`
 //!  - Auto usage message generation

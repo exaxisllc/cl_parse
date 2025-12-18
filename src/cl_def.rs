@@ -45,13 +45,13 @@ impl CommandLineDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
+    /// * `aliases` - The aliases for this option, e.g., `vec!["-n", "--negative"]`
     /// * `description` - The description of this option, e.g., `A negative number`
     ///
     /// # Panics
     ///
     /// * Panics if the alias does not start with `-` or `--`.
-    /// * Panics if the alias starts with `-- and the length is less than 4.
+    /// * Panics if the alias starts with `--` and the length is less than 4.
     /// * Panics if the alias starts with `-` and the length is not equal to 2.
     ///
     /// # Examples
@@ -95,7 +95,7 @@ impl CommandLineDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
+    /// * `aliases` - The aliases for this option, e.g., `vec!["-n", "--negative"]`
     /// * `value_name` - The `Option<&'static str>` name for the value associated with the option.
     ///   If set to `None`, this option will be treated as a flag, and its value will default to `false`.
     /// * `default_value` - An `Option<T>` containing the value to use if one is not supplied. If `None`,
@@ -152,7 +152,7 @@ impl CommandLineDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option, e.g., `-n, --negative`
+    /// * `aliases` - The aliases for this option, e.g., `vec!["-n", "--negative"]`
     /// * `value_name` - The `Option<&'static str>` name for the value associated with the option.
     ///   If set to `None`, this option will be treated as a flag, and its value will default to `false`.
     /// * `default_value` - An `Option<T>` containing the value to use if one is not supplied. If `None`,
@@ -490,9 +490,9 @@ impl CommandLineDef {
 
 /// Defines the valid options for this program
 struct OptionDef {
-    /// The aliases for this option, e.g., `-f --filename`
+    /// The aliases for this option, e.g., `vec!["-f", "--filename"]`
     aliases: Vec<&'static str>,
-    /// The name for the value associated with the option, e.g., `-f path`. If `None`,
+    /// The name for the value associated with the option, e.g., `pathname`. If `None`,
     /// this option will be treated as a flag and the default value will be `false`.
     value_name: Option<&'static str>,
     /// An Option containing the value to use if one is not supplied. If `None`,
@@ -509,12 +509,12 @@ impl OptionDef {
     ///
     /// # Arguments
     ///
-    /// * `aliases` - The aliases for this option, e.g., `-f --filename`
-    /// * `value_name` - The name for the value associated with the option, e.g., `-f path`. If `None`,
+    /// * `aliases` - The aliases for this option, e.g., `vec!["-f", "--filename"]`
+    /// * `value_name` - The name for the value associated with the option, e.g., `pathname`. If `None`,
     ///   this option will be treated as a flag and the default value will be `false`.
     /// * `default_value` - An Option<T> containing the value to use if one is not supplied. If `None`,
     ///   then this option will be considered required and will panic if a value is not specified on the
-    ///   commandline. If `value_name` == `None``, `default_value` is ignored.
+    ///   commandline. If `value_name` == `None`, `default_value` is ignored.
     /// * `description` - The description of this option, e.g., `The file to be read`
     ///
     /// # Panics
