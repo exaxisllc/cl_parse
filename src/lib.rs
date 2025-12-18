@@ -7,19 +7,19 @@
 //!
 //! `cl_parse` was developed to allow the most common commandline options that are used in
 //! modern commandline utilities. It was also designed for ease of use. The following are the features
-//! implemented in cl_parse.
+//! implemented in `cl_parse`:
 //!
-//!  - option aliases. e.g. -f, --file
-//!  - options with negative values. e.g. --increment -1
-//!  - flag concatenation. i.e. -xvgf  is equivalent to -x -v -g -f
+//!  - option aliases, e.g., `vec!["-f", "--file"]`
+//!  - options with negative values, e.g., `--increment -1`
+//!  - flag concatenation, e.g., `-xvgf` instead of `-x -v -g -f`
 //!  - Auto usage message generation
 //!  - Auto help message generation
-//!  - -h, --help output provided by default
+//!  - `-h`, `--help` output provided by default
 //!  - missing value detection for options
 //!  - ability to define required options
-//!  - option and argument validation. i.e. only defined options and arguments can be used
+//!  - option and argument validation, i.e., only defined options and arguments can be used.
 //!  - unordered options and arguments
-//!  - retrieving the option or argument in the target type. e.g. i32, String, etc.
+//!  - retrieving the option or argument in the target type, e.g., `i32`, `String`, etc.
 //!
 //! # Examples
 //!
