@@ -492,7 +492,7 @@ impl CommandLineDef {
 struct OptionDef {
     /// The aliases for this option, e.g., `vec!["-f", "--filename"]`
     aliases: Vec<&'static str>,
-    /// The name for the value associated with the option, e.g., `pathname`. If `None`,
+    /// The name for the value associated with the option, e.g., `file_path`. If `None`,
     /// this option will be treated as a flag and the default value will be `false`.
     value_name: Option<&'static str>,
     /// An Option containing the value to use if one is not supplied. If `None`,
@@ -510,7 +510,7 @@ impl OptionDef {
     /// # Arguments
     ///
     /// * `aliases` - The aliases for this option, e.g., `vec!["-f", "--filename"]`
-    /// * `value_name` - The name for the value associated with the option, e.g., `pathname`. If `None`,
+    /// * `value_name` - The name for the value associated with the option, e.g., `file_path`. If `None`,
     ///   this option will be treated as a flag and the default value will be `false`.
     /// * `default_value` - An Option<T> containing the value to use if one is not supplied. If `None`,
     ///   then this option will be considered required and will panic if a value is not specified on the
