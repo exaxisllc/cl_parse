@@ -516,6 +516,7 @@ impl OptionDef {
     ///   then this option will be considered required and will panic if a value is not specified on the
     ///   commandline. If `value_name` == `None`, `default_value` is ignored.
     /// * `description` - The description of this option, e.g., `The file to be read`
+    /// * `valid_values` - A list of values to validate this option against.
     ///
     /// # Panics
     ///

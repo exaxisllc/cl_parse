@@ -11,6 +11,8 @@
 //!
 //!  - option aliases, e.g., `vec!["-f", "--file"]`
 //!  - options with negative values, e.g., `--increment -1`
+//!  - option default value
+//!  - option valid values, e.g., for --optimize valid values `vec!["1","2","3"]`
 //!  - flag concatenation, e.g., `-xvgf` instead of `-x -v -g -f`
 //!  - Auto usage message generation
 //!  - Auto help message generation
