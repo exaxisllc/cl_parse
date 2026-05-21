@@ -352,8 +352,7 @@ impl CommandLineDef {
 
         for od in &self.option_defs {
             let mut help_options = od.aliases.join(", ");
-            if od.value_name.is_some() {
-                let value_name = od.value_name.unwrap();
+            if let Some(value_name) = od.value_name {
                 help_options = format!("{help_options} <{value_name}>");
                 if od.default_value.is_none() {
                     requireds.push(format!("{} <{}>", od.aliases[0], value_name));
